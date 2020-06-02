@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Icon from './Icon';
+import VinylParser from './parser/VinylParser';
 
 const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -65,6 +67,27 @@ const App: React.FC = () => {
           onChange={(e) => setStartY(parseInt(e.currentTarget.value, 10))}
           value={startY}
         />
+        <button
+          style={{
+            display: 'block',
+            width: 256,
+            marginTop: 24,
+            fontSize: 24,
+            padding: 12,
+          }}
+          onClick={() => {
+            const context = canvasRef.current?.getContext('2d');
+            if (!context) {
+              return;
+            }
+
+            const parser = new VinylParser(context);
+            parser.parseVinyl(startX, startY);
+          }}
+          disabled={!imageData}
+        >
+          Read <Icon icon='music' />
+        </button>
       </main>
     </div>
   );
