@@ -5,29 +5,32 @@ import createWaves from './parser/createWaves';
 
 const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const [imageData, setImageData] = useState('');
+  const [image, setImage] = useState<HTMLImageElement>();
+
   const [startX, setStartX] = useState<number>(0);
   const [startY, setStartY] = useState<number>(0);
   const [musicData, setMusicData] = useState('');
   const [loadingState, setLoadingState] = useState('');
+  const [parser, setParser] = useState<VinylParser>();
 
   useEffect((): void => {
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-
-    if (!canvas || !context) {
-      return;
-    }
-
-    // Load the image onto the canvas.
-    const image = new Image();
-    image.addEventListener('load', () => {
-      canvas.width = image.width;
-      canvas.height = image.height;
-      context.drawImage(image, 0, 0);
+    // Load the image.
+    const loadImg = new Image();
+    loadImg.addEventListener('load', () => {
+      setImage(loadImg);
     });
-    image.src = imageData;
+    loadImg.src = imageData;
   }, [imageData]);
+
+  useEffect((): void => {
+    // Draw the image onto the canvas.
+    const context = canvasRef.current?.getContext('2d');
+    if (image && context) {
+      context.drawImage(image, 0, 0);
+    }
+  }, [image]);
 
   return (
     <div>
@@ -35,9 +38,18 @@ const App: React.FC = () => {
         <h1>Vixyl</h1>
       </header>
       <main>
-        <canvas ref={canvasRef} width={0} height={0} style={{
-          marginRight: 48,
-        }} />
+        <div>
+          <canvas
+            ref={canvasRef}
+            width={image?.width}
+            height={image?.height}
+            style={{
+              marginRight: 48,
+              width: image?.width,
+              height: image?.height,
+            }}
+          />
+        </div>
         <div className='controls'>
           <input
             type='file'
@@ -51,8 +63,10 @@ const App: React.FC = () => {
               // Read the file into state.
               const reader = new FileReader();
               reader.addEventListener('load', () => {
-                if (typeof reader.result === 'string') {
+                const context = canvasRef.current?.getContext('2d');
+                if (typeof reader.result === 'string' && context) {
                   setImageData(reader.result);
+                  setParser(new VinylParser(context));
                 }
               });
               reader.readAsDataURL(file);
@@ -91,21 +105,29 @@ const App: React.FC = () => {
           </div>
           <button
             style={{
-              display: 'block',
+              width: '100%',
+              fontSize: 16,
+              padding: 12,
+              marginBottom: 12,
+            }}
+            disabled={!parser}
+          >
+            Detect starting point
+          </button>
+          <button
+            style={{
               width: '100%',
               fontSize: 24,
               padding: 12,
               marginBottom: 12,
             }}
             onClick={() => {
-              const context = canvasRef.current?.getContext('2d');
-              if (!context) {
+              if (!parser) {
                 return;
               }
 
               setLoadingState('Decoding vinylized data streams...');
               setTimeout(() => {
-                const parser = new VinylParser(context);
                 const parsedData = parser.parseVinyl(startX, startY);
                 setLoadingState('Reconfiguring data streams to physical wave mechanics...');
                 setTimeout(() => {
@@ -114,7 +136,7 @@ const App: React.FC = () => {
                 }, 0);
               });
             }}
-            disabled={!imageData}
+            disabled={!parser}
           >
             Read <Icon icon='music' />
           </button>
