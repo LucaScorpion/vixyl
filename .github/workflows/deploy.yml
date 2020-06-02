@@ -1,9 +1,9 @@
-name: Deploy to pages
+name: Deploy to gh-pages
 
 on:
   push:
     branches:
-    - actions
+    - master
 
 jobs:
   build:
