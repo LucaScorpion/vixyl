@@ -9,25 +9,17 @@ export default class VinylParser {
     const data: number[] = [];
 
     let prevPos = { x: startX, y: startY };
-    let pos = { x: startX, y: startY };
+    let pos: Point | null = { x: startX, y: startY };
 
-    let pixel = this.getPixelData(pos);
-    while (true) {
+    while (pos) {
+      // Read the pixel data, push it.
+      let pixel = this.getPixelData(pos);
       data.push(pixel.red);
 
-      // Find the next position, check if we are at the end.
-      const nextPos = this.findNextPixel(prevPos, pos);
-      if (!nextPos) {
-        break;
-      }
-
+      // Get the next pixel position.
       prevPos = pos;
-      pos = nextPos;
-
-      pixel = this.getPixelData(pos);
+      pos = this.findNextPixel(prevPos, pos);
     }
-
-    console.log(data);
 
     return data;
   }
