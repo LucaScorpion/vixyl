@@ -29,6 +29,7 @@ export function base64ArrayBuffer(arrayBuffer) {
     }
 
     // Deal with the remaining bytes and padding
+    // eslint-disable-next-line eqeqeq
     if (byteRemainder == 1) {
         chunk = bytes[mainLength]
 
@@ -38,6 +39,7 @@ export function base64ArrayBuffer(arrayBuffer) {
         b = (chunk & 3)   << 4 // 3   = 2^2 - 1
 
         base64 += encodings[a] + encodings[b] + '=='
+    // eslint-disable-next-line eqeqeq
     } else if (byteRemainder == 2) {
         chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
 
