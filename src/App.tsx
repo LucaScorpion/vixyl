@@ -25,10 +25,11 @@ const App: React.FC = () => {
   }, [imageData]);
 
   useEffect((): void => {
-    // Draw the image onto the canvas.
+    // Draw the image onto the canvas, load the parser.
     const context = canvasRef.current?.getContext('2d');
     if (image && context) {
       context.drawImage(image, 0, 0);
+      setParser(new VinylParser(context));
     }
   }, [image]);
 
@@ -63,10 +64,8 @@ const App: React.FC = () => {
               // Read the file into state.
               const reader = new FileReader();
               reader.addEventListener('load', () => {
-                const context = canvasRef.current?.getContext('2d');
-                if (typeof reader.result === 'string' && context) {
+                if (typeof reader.result === 'string') {
                   setImageData(reader.result);
-                  setParser(new VinylParser(context));
                 }
               });
               reader.readAsDataURL(file);
@@ -111,6 +110,13 @@ const App: React.FC = () => {
               marginBottom: 12,
             }}
             disabled={!parser}
+            onClick={(): void => {
+              if (parser) {
+                setTimeout((): void => {
+                  console.log(parser.detectStartingPoint());
+                }, 0);
+              }
+            }}
           >
             Detect starting point
           </button>
@@ -121,7 +127,7 @@ const App: React.FC = () => {
               padding: 12,
               marginBottom: 12,
             }}
-            onClick={() => {
+            onClick={(): void => {
               if (!parser) {
                 return;
               }

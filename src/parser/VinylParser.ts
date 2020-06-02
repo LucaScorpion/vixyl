@@ -2,7 +2,10 @@ import { PixelData } from './PixelData';
 import { isSamePoint, Point } from './Point';
 
 export default class VinylParser {
-  constructor(private readonly context: CanvasRenderingContext2D) {
+  private readonly imageData: ImageData;
+
+  constructor(context: CanvasRenderingContext2D) {
+     this.imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
   }
 
   public parseVinyl(startX: number, startY: number): Uint8Array {
@@ -25,8 +28,49 @@ export default class VinylParser {
     return new Uint8Array(data);
   }
 
+  public detectStartingPoint(): Point[] {
+    const options: Point[] = [];
+    for (let x = 0; x < this.imageData.width; x++) {
+      for (let y = 0; y < this.imageData.height; y++) {
+        const pos = {x, y};
+        const pixel = this.getPixelData(pos);
+
+        if (!this.isDataPixel(pixel)) {
+          continue;
+        }
+
+        let hits = -1;
+        for (let dX = -1; dX <= 1; dX++) {
+          for (let dY = -1; dY <= 1; dY++) {
+            const nextPoint = ({
+              x: pos.x + dX,
+              y: pos.y + dY,
+            });
+
+            // Check if the point is in bounds.
+            if (!this.isInBounds(nextPoint)) {
+              continue;
+            }
+
+            // Get the pixel data, check if it is valid.
+            const data = this.getPixelData(nextPoint);
+            if (this.isDataPixel(data)) {
+              hits++;
+            }
+          }
+        }
+
+        if (hits === 1) {
+          options.push(pos);
+        }
+      }
+    }
+    return options;
+  }
+
   private getPixelData(pos: Point): PixelData {
-    const data = this.context.getImageData(pos.x, pos.y, 1, 1).data;
+    const offset = (pos.x + pos.y * this.imageData.width) * 4;
+    const data = this.imageData.data.slice(offset, offset + 4);
     return ({
       red: data[0],
       green: data[1],
@@ -36,7 +80,7 @@ export default class VinylParser {
   }
 
   private isInBounds(pos: Point): boolean {
-    return pos.x >= 0 && pos.y >= 0 && pos.x < this.context.canvas.width && pos.y < this.context.canvas.height;
+    return pos.x >= 0 && pos.y >= 0 && pos.x < this.imageData.width && pos.y < this.imageData.height;
   }
 
   private findNextPixel(previous: Point, current: Point): Point | null {
