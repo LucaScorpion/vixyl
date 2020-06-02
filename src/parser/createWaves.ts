@@ -20,7 +20,7 @@ function getWaveData(data: Uint8Array): Uint8Array {
 function createRiffChunk(data: Uint8Array): Uint8Array {
   const chunk = new Uint8Array(12);
   encodeString(chunk, 0, 'RIFF');
-  encodeInt(chunk, 4, 8 + data.length);
+  encodeInt(chunk, 4, 8 + data.length); // TODO: Check this
   encodeString(chunk, 8, 'WAVE');
   return chunk;
 }

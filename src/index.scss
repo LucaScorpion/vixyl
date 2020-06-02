@@ -7,4 +7,36 @@ body {
   sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  background: #EEE;
+}
+
+header {
+  width: 100%;
+  text-align: center;
+  background-color: #222;
+  margin-bottom: 48px;
+
+  h1 {
+    margin: 0;
+    padding: 12px;
+    color: #EEE;
+  }
+}
+
+main {
+  display: flex;
+  justify-content: center;
+
+  button:hover:enabled {
+    cursor: pointer;
+  }
+
+  .controls {
+    width: 250px;
+
+    input[type="number"] {
+      width: 100px;
+    }
+  }
 }
