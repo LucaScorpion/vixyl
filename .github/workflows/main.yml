@@ -1,0 +1,21 @@
+name: Deploy to pages
+
+on:
+  push:
+    branches:
+    - actions
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    # Set up a Node.js environment
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: '14'
+    - run: npm ci
+    - run: npm run build
