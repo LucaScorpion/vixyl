@@ -1,7 +1,8 @@
 {
   "name": "vixyl",
   "version": "0.1.0",
-  "private": true,
+  "homepage": "https://lucascorpion.github.io/vixyl",
+  "repository": "github:LucaScorpion/vixyl",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@testing-library/jest-dom": "^4.2.4",
