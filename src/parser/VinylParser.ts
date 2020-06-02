@@ -5,7 +5,7 @@ export default class VinylParser {
   constructor(private readonly context: CanvasRenderingContext2D) {
   }
 
-  public parseVinyl(startX: number, startY: number): number[] {
+  public parseVinyl(startX: number, startY: number): Uint8Array {
     const data: number[] = [];
 
     let prevPos = { x: startX, y: startY };
@@ -22,9 +22,7 @@ export default class VinylParser {
       pos = nextPos;
     }
 
-    console.log(data);
-
-    return data;
+    return new Uint8Array(data);
   }
 
   private getPixelData(pos: Point): PixelData {

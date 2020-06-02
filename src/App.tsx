@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 import VinylParser from './parser/VinylParser';
+import createWaves from './parser/createWaves';
 
 const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageData, setImageData] = useState('');
   const [startX, setStartX] = useState<number>(0);
   const [startY, setStartY] = useState<number>(0);
+  const [musicData, setMusicData] = useState('');
+  const [loadingState, setLoadingState] = useState('');
 
   useEffect((): void => {
     const canvas = canvasRef.current;
@@ -29,7 +32,7 @@ const App: React.FC = () => {
   return (
     <div>
       <header>
-        Vixyl
+        <h1>Vixyl</h1>
       </header>
       <main>
         <input
@@ -81,13 +84,23 @@ const App: React.FC = () => {
               return;
             }
 
-            const parser = new VinylParser(context);
-            parser.parseVinyl(startX, startY);
+            setLoadingState('Decoding vinylized data streams...');
+            setTimeout(() => {
+              const parser = new VinylParser(context);
+              const parsedData = parser.parseVinyl(startX, startY);
+              setLoadingState('Reconfiguring data streams to physical wave mechanics...');
+              setTimeout(() => {
+                setMusicData(createWaves(parsedData));
+                setLoadingState('');
+              }, 0);
+            });
           }}
           disabled={!imageData}
         >
           Read <Icon icon='music' />
         </button>
+        <span>{loadingState}</span>
+        {musicData && <audio controls src={musicData} />}
       </main>
     </div>
   );
