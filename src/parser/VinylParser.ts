@@ -5,7 +5,7 @@ export default class VinylParser {
   private readonly imageData: ImageData;
 
   constructor(context: CanvasRenderingContext2D) {
-     this.imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+    this.imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
   }
 
   public parseVinyl(startX: number, startY: number): Uint8Array {
@@ -28,11 +28,12 @@ export default class VinylParser {
     return new Uint8Array(data);
   }
 
-  public detectStartingPoint(): Point[] {
+  public detectStartingPoint(): Point | null {
     const options: Point[] = [];
+
     for (let x = 0; x < this.imageData.width; x++) {
       for (let y = 0; y < this.imageData.height; y++) {
-        const pos = {x, y};
+        const pos = { x, y };
         const pixel = this.getPixelData(pos);
 
         if (!this.isDataPixel(pixel)) {
@@ -65,7 +66,29 @@ export default class VinylParser {
         }
       }
     }
-    return options;
+
+    let closest: Point = options[0];
+    let closestDist = this.getDistanceToEdge(options[0]);
+    for (let i = 1; i < options.length; i++) {
+      let dist = this.getDistanceToEdge(options[i]);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = options[i];
+      }
+    }
+
+    return closest;
+  }
+
+  private getDistanceToEdge(pos: Point): number {
+    let minDist = pos.x < pos.y ? pos.x : pos.y;
+    if (this.imageData.width - pos.x < minDist) {
+      minDist = this.imageData.width - pos.x;
+    }
+    if (this.imageData.height - pos.y < minDist) {
+      minDist = this.imageData.height - pos.y;
+    }
+    return minDist;
   }
 
   private getPixelData(pos: Point): PixelData {

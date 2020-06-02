@@ -113,7 +113,11 @@ const App: React.FC = () => {
             onClick={(): void => {
               if (parser) {
                 setTimeout((): void => {
-                  console.log(parser.detectStartingPoint());
+                  const starting = parser.detectStartingPoint();
+                  if (starting) {
+                    setStartX(starting.x);
+                    setStartY(starting.y);
+                  }
                 }, 0);
               }
             }}
