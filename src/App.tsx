@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const [loadingState, setLoadingState] = useState('');
   const [parser, setParser] = useState<VinylParser>();
 
-  const [vinylMeta, setVinylMeta] = useState<VinylMeta>({ trackStart: { x: 0, y: 0 }, sampleRate: 0 });
+  const [vinylMeta, setVinylMeta] = useState<VinylMeta>();
 
   useEffect((): void => {
     // Load the image.
@@ -88,13 +88,13 @@ const App: React.FC = () => {
               marginBottom: 12,
             }}
             onClick={(): void => {
-              if (!parser) {
+              if (!parser || !vinylMeta) {
                 return;
               }
 
               setLoadingState('Decoding vinylized data streams...');
               setTimeout(() => {
-                const parsedData = parser.parseVinyl(vinylMeta?.trackStart);
+                const parsedData = parser.parseVinyl(vinylMeta.trackStart);
                 setLoadingState('Reconfiguring data streams to physical wave mechanics...');
                 setTimeout(() => {
                   setMusicData(createWaves(parsedData, vinylMeta));
@@ -102,7 +102,7 @@ const App: React.FC = () => {
                 }, 0);
               });
             }}
-            disabled={!parser}
+            disabled={!parser || !vinylMeta}
           >
             Read <Icon icon='music' />
           </button>

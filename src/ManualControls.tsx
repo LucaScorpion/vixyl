@@ -41,7 +41,7 @@ const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
         >
           Detect
         </button>
-        <div className='inline' style={{ marginLeft: 12 }}>
+        <div style={{ marginLeft: 12, display: 'inline-block' }}>
           X:
           <input
             type='number'
@@ -51,7 +51,7 @@ const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
             style={{ marginLeft: 6 }}
           />
         </div>
-        <div className='inline' style={{ marginLeft: 12 }}>
+        <div style={{ marginLeft: 12, display: 'inline-block' }}>
           Y:
           <input
             type='number'
