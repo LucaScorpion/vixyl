@@ -5,6 +5,8 @@ import createWaves from './parser/createWaves';
 import GithubCorner from './GithubCorner';
 import { VinylMeta } from './parser/VinylMeta';
 import ManualControls from './ManualControls';
+import Vinyl from './parser/Vinyl';
+import parseVinylMeta from './parser/parseVinylMeta';
 
 const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -12,11 +14,13 @@ const App: React.FC = () => {
   const [imageData, setImageData] = useState('');
   const [image, setImage] = useState<HTMLImageElement>();
 
+  const [vinyl, setVinyl] = useState<Vinyl>();
+  const [vinylMeta, setVinylMeta] = useState<VinylMeta>();
+  const [manualControls, setManualControls] = useState(false);
+
   const [musicData, setMusicData] = useState('');
   const [loadingState, setLoadingState] = useState('');
   const [parser, setParser] = useState<VinylParser>();
-
-  const [vinylMeta, setVinylMeta] = useState<VinylMeta>();
 
   useEffect((): void => {
     // Load the image.
@@ -28,14 +32,37 @@ const App: React.FC = () => {
   }, [imageData]);
 
   useEffect((): void => {
-    // Draw the image onto the canvas, load the parser.
+    // Get the canvas context.
     const context = canvasRef.current?.getContext('2d');
-    if (image && context) {
-      context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-      context.drawImage(image, 0, 0);
-      setParser(new VinylParser(context));
+    if (!image || !context) {
+      return;
     }
+
+    // Clear the canvas, draw the image onto it.
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.drawImage(image, 0, 0);
+
+    // Load the vinyl from the context.
+    setVinyl(new Vinyl(context));
   }, [image]);
+
+  useEffect((): void => {
+    if (!vinyl) {
+      return;
+    }
+
+    // Parse the vinyl metadata.
+    const meta = parseVinylMeta(vinyl);
+    if (meta) {
+      setVinylMeta(meta);
+      setManualControls(false);
+    } else {
+      setManualControls(true);
+    }
+
+    // Create the vinyl parser.
+    setParser(new VinylParser(vinyl));
+  }, [vinyl]);
 
   return (
     <div>
@@ -66,6 +93,9 @@ const App: React.FC = () => {
                 return;
               }
 
+              // Clear the previous sound data.
+              setMusicData('');
+
               // Read the file into state.
               const reader = new FileReader();
               reader.addEventListener('load', () => {
@@ -78,7 +108,7 @@ const App: React.FC = () => {
             className='row'
           />
 
-          {parser && <ManualControls parser={parser} setVinylMeta={setVinylMeta} />}
+          {manualControls && parser && <ManualControls parser={parser} setVinylMeta={setVinylMeta} />}
 
           <button
             style={{

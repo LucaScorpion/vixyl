@@ -3,10 +3,7 @@ import { isSamePoint, Point } from './Point';
 import Vinyl from './Vinyl';
 
 export default class VinylParser {
-  private readonly vinyl: Vinyl;
-
-  constructor(context: CanvasRenderingContext2D) {
-    this.vinyl = new Vinyl(context);
+  constructor(private readonly vinyl: Vinyl) {
   }
 
   public parseVinyl(trackStart: Point): Uint8Array {
