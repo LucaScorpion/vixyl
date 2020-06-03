@@ -9,11 +9,11 @@ export default class VinylParser {
     this.vinyl = new Vinyl(context);
   }
 
-  public parseVinyl(startX: number, startY: number): Uint8Array {
+  public parseVinyl(trackStart: Point): Uint8Array {
     const data: number[] = [];
 
-    let prevPos = { x: startX, y: startY };
-    let pos: Point | null = { x: startX, y: startY };
+    let prevPos = trackStart;
+    let pos: Point | null = trackStart;
 
     while (pos) {
       // Read the pixel data, push it.

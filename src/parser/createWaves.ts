@@ -1,15 +1,22 @@
 import { base64ArrayBuffer } from './b64Encode';
 
-export default function createWaves(data: Uint8Array): string {
-  const waveData = getWaveData(data);
+export interface WaveFormat {
+  sampleRate: number;
+}
+
+export default function createWaves(data: Uint8Array, format: WaveFormat): string {
+  const waveData = getWaveData(data, format);
   const encodedData = base64ArrayBuffer(waveData);
   return `data:audio/wav;base64,${encodedData}`;
 }
 
-function getWaveData(data: Uint8Array): Uint8Array {
+function getWaveData(data: Uint8Array, format: WaveFormat): Uint8Array {
+  // Create all the chunks.
   const riffChunk = createRiffChunk(data);
-  const fmtChunk = createFmtChunk();
+  const fmtChunk = createFmtChunk(format);
   const dataChunk = createDataChunk(data);
+
+  // Concatenate the chunks.
   const waveData = new Uint8Array(riffChunk.length + fmtChunk.length + dataChunk.length);
   waveData.set(riffChunk, 0);
   waveData.set(fmtChunk, riffChunk.length);
@@ -25,14 +32,14 @@ function createRiffChunk(data: Uint8Array): Uint8Array {
   return chunk;
 }
 
-function createFmtChunk(): Uint8Array {
+function createFmtChunk(format: WaveFormat): Uint8Array {
   const chunk = new Uint8Array(24);
   encodeString(chunk, 0, 'fmt ');
   encodeInt(chunk, 4, 16); // Subchunk size = 16 for PCM
   encodeShort(chunk, 8, 1); // Audio format = 1 for PCM (linear quantization, no compression)
   encodeShort(chunk, 10, 1); // Audio channels = 1 (mono)
-  encodeInt(chunk, 12, 4096); // Sample rate
-  encodeInt(chunk, 16, 4096); // Bitrate = sample rate * channels * bytes per sample
+  encodeInt(chunk, 12, format.sampleRate); // Sample rate
+  encodeInt(chunk, 16, format.sampleRate); // Bitrate = sample rate * channels * bytes per sample
   encodeShort(chunk, 20, 1); // Block align = channels * bytes per sample
   encodeShort(chunk, 22, 8); // Bits per sample
   return chunk;

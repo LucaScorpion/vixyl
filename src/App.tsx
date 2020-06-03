@@ -3,6 +3,8 @@ import Icon from './Icon';
 import VinylParser from './parser/VinylParser';
 import createWaves from './parser/createWaves';
 import GithubCorner from './GithubCorner';
+import { VinylMeta } from './parser/VinylMeta';
+import ManualControls from './ManualControls';
 
 const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -10,11 +12,11 @@ const App: React.FC = () => {
   const [imageData, setImageData] = useState('');
   const [image, setImage] = useState<HTMLImageElement>();
 
-  const [startX, setStartX] = useState<number>(0);
-  const [startY, setStartY] = useState<number>(0);
   const [musicData, setMusicData] = useState('');
   const [loadingState, setLoadingState] = useState('');
   const [parser, setParser] = useState<VinylParser>();
+
+  const [vinylMeta, setVinylMeta] = useState<VinylMeta>({ trackStart: { x: 0, y: 0 }, sampleRate: 0 });
 
   useEffect((): void => {
     // Load the image.
@@ -73,60 +75,11 @@ const App: React.FC = () => {
               });
               reader.readAsDataURL(file);
             }}
-            style={{
-              marginBottom: 12,
-            }}
+            className='row'
           />
-          <div style={{
-            marginBottom: 12,
-          }}>
-            Starting X:
-            <input
-              type='number'
-              min={0}
-              onChange={(e) => setStartX(parseInt(e.currentTarget.value, 10))}
-              value={startX}
-              style={{
-                marginLeft: 12,
-              }}
-            />
-          </div>
-          <div style={{
-            marginBottom: 12,
-          }}>
-            Starting Y:
-            <input
-              type='number'
-              min={0}
-              onChange={(e) => setStartY(parseInt(e.currentTarget.value, 10))}
-              value={startY}
-              style={{
-                marginLeft: 12,
-              }}
-            />
-          </div>
-          <button
-            style={{
-              width: '100%',
-              fontSize: 16,
-              padding: 12,
-              marginBottom: 12,
-            }}
-            disabled={!parser}
-            onClick={(): void => {
-              if (parser) {
-                setTimeout((): void => {
-                  const starting = parser.detectStartingPoint();
-                  if (starting) {
-                    setStartX(starting.x);
-                    setStartY(starting.y);
-                  }
-                }, 0);
-              }
-            }}
-          >
-            Detect starting point
-          </button>
+
+          {parser && <ManualControls parser={parser} setVinylMeta={setVinylMeta} />}
+
           <button
             style={{
               width: '100%',
@@ -141,10 +94,10 @@ const App: React.FC = () => {
 
               setLoadingState('Decoding vinylized data streams...');
               setTimeout(() => {
-                const parsedData = parser.parseVinyl(startX, startY);
+                const parsedData = parser.parseVinyl(vinylMeta?.trackStart);
                 setLoadingState('Reconfiguring data streams to physical wave mechanics...');
                 setTimeout(() => {
-                  setMusicData(createWaves(parsedData));
+                  setMusicData(createWaves(parsedData, vinylMeta));
                   setLoadingState('');
                 }, 0);
               });

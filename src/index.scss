@@ -47,7 +47,15 @@ main {
     width: 320px;
 
     input[type="number"] {
-      width: 100px;
+      width: 64px;
+    }
+
+    .row {
+      margin-bottom: 12px;
     }
   }
+}
+
+.inline {
+  display: inline-block;
 }

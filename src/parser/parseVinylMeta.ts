@@ -15,8 +15,12 @@ export default function parseVinylMeta(vinyl: Vinyl): VinylMeta | null {
     y: decodeInt24(vinyl.getPixel(1, 1)),
   };
 
+  // The values on y=2 encode WAV format information.
+  // TODO
+
   return ({
     trackStart,
+    sampleRate: 4096
   });
 }
 
