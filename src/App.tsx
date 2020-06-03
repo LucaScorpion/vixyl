@@ -29,6 +29,7 @@ const App: React.FC = () => {
     // Draw the image onto the canvas, load the parser.
     const context = canvasRef.current?.getContext('2d');
     if (image && context) {
+      context.clearRect(0, 0, context.canvas.width, context.canvas.height);
       context.drawImage(image, 0, 0);
       setParser(new VinylParser(context));
     }

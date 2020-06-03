@@ -1,11 +1,12 @@
-import { PixelData } from './PixelData';
+import { Pixel } from './Pixel';
 import { isSamePoint, Point } from './Point';
+import Vinyl from './Vinyl';
 
 export default class VinylParser {
-  private readonly imageData: ImageData;
+  private readonly vinyl: Vinyl;
 
   constructor(context: CanvasRenderingContext2D) {
-    this.imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+    this.vinyl = new Vinyl(context);
   }
 
   public parseVinyl(startX: number, startY: number): Uint8Array {
@@ -16,7 +17,7 @@ export default class VinylParser {
 
     while (pos) {
       // Read the pixel data, push it.
-      let pixel = this.getPixelData(pos);
+      let pixel = this.vinyl.getPixel(pos);
       data.push(pixel.red);
 
       // Get the next pixel position.
@@ -31,10 +32,10 @@ export default class VinylParser {
   public detectStartingPoint(): Point | null {
     const options: Point[] = [];
 
-    for (let x = 0; x < this.imageData.width; x++) {
-      for (let y = 0; y < this.imageData.height; y++) {
+    for (let x = 0; x < this.vinyl.width; x++) {
+      for (let y = 0; y < this.vinyl.height; y++) {
         const pos = { x, y };
-        const pixel = this.getPixelData(pos);
+        const pixel = this.vinyl.getPixel(pos);
 
         if (!this.isDataPixel(pixel)) {
           continue;
@@ -49,12 +50,12 @@ export default class VinylParser {
             });
 
             // Check if the point is in bounds.
-            if (!this.isInBounds(nextPoint)) {
+            if (!this.vinyl.isInBounds(nextPoint)) {
               continue;
             }
 
             // Get the pixel data, check if it is valid.
-            const data = this.getPixelData(nextPoint);
+            const data = this.vinyl.getPixel(nextPoint);
             if (this.isDataPixel(data)) {
               hits++;
             }
@@ -82,28 +83,13 @@ export default class VinylParser {
 
   private getDistanceToEdge(pos: Point): number {
     let minDist = pos.x < pos.y ? pos.x : pos.y;
-    if (this.imageData.width - pos.x < minDist) {
-      minDist = this.imageData.width - pos.x;
+    if (this.vinyl.width - pos.x < minDist) {
+      minDist = this.vinyl.width - pos.x;
     }
-    if (this.imageData.height - pos.y < minDist) {
-      minDist = this.imageData.height - pos.y;
+    if (this.vinyl.height - pos.y < minDist) {
+      minDist = this.vinyl.height - pos.y;
     }
     return minDist;
-  }
-
-  private getPixelData(pos: Point): PixelData {
-    const offset = (pos.x + pos.y * this.imageData.width) * 4;
-    const data = this.imageData.data.slice(offset, offset + 4);
-    return ({
-      red: data[0],
-      green: data[1],
-      blue: data[2],
-      alpha: data[3],
-    });
-  }
-
-  private isInBounds(pos: Point): boolean {
-    return pos.x >= 0 && pos.y >= 0 && pos.x < this.imageData.width && pos.y < this.imageData.height;
   }
 
   private findNextPixel(previous: Point, current: Point): Point | null {
@@ -120,12 +106,12 @@ export default class VinylParser {
         }
 
         // Check if the point is in bounds.
-        if (!this.isInBounds(nextPoint)) {
+        if (!this.vinyl.isInBounds(nextPoint)) {
           continue;
         }
 
         // Get the pixel data, check if it is valid.
-        const data = this.getPixelData(nextPoint);
+        const data = this.vinyl.getPixel(nextPoint);
         if (this.isDataPixel(data)) {
           return nextPoint;
         }
@@ -135,7 +121,7 @@ export default class VinylParser {
     return null;
   }
 
-  private isDataPixel(data: PixelData): boolean {
+  private isDataPixel(data: Pixel): boolean {
     return (data.red !== 0 || data.green !== 0 || data.blue !== 0) && data.alpha !== 0;
   }
 }
