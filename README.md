@@ -1,44 +1,28 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Vixyl
 
-## Available Scripts
+[![Deploy to gh-pages](https://github.com/LucaScorpion/vixyl/workflows/Deploy%20to%20gh-pages/badge.svg)](https://github.com/LucaScorpion/vixyl/actions?query=workflow%3A%22Deploy+to+gh-pages%22)
 
-In the project directory, you can run:
+## About
 
-### `npm start`
+This project started thanks to a [tweet by Notch](https://twitter.com/notch/status/490927655806853120), which contained just this image:
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+![Turn Down for What vinyl](vinyl.png)
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Encoded in the spiral is an 8-bit mono 4096Hz audio track, containing 3 seconds of the song "Turn Down for What".
 
-### `npm test`
+## Usage
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Go to https://lucascorpion.github.io/vixyl
+2. Load the vinyl image you want to read
+3. Detect the starting point of the track*
+4. Click the "Read" button, and enjoy some lo-fi music :)
 
-### `npm run build`
+\* You can also enter the coordinates manually, but in most cases it will be able to detect the correct starting point automatically. 
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Development
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+1. Clone the repo
+2. Run `npm install`
+3. Run `npm start`, this will open a browser to http://localhost:3000/vixyl
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Any changes in the code should automatically reload the tab.

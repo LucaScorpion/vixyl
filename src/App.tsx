@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 import VinylParser from './parser/VinylParser';
 import createWaves from './parser/createWaves';
+import GithubCorner from './GithubCorner';
 
 const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -38,6 +39,7 @@ const App: React.FC = () => {
       <header>
         <h1>Vixyl</h1>
       </header>
+      <GithubCorner />
       <main>
         <div>
           <canvas
@@ -151,7 +153,7 @@ const App: React.FC = () => {
             Read <Icon icon='music' />
           </button>
           <span>{loadingState}</span>
-          {musicData && <audio controls src={musicData} />}
+          {musicData && <audio controls src={musicData} style={{ width: '100%' }} />}
         </div>
       </main>
     </div>
