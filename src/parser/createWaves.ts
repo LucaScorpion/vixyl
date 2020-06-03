@@ -48,7 +48,7 @@ function createDataChunk(data: Uint8Array): Uint8Array {
 
 function encodeString(data: Uint8Array, offset: number, value: string): void {
   for (let i = 0; i < value.length; i++) {
-    data[offset + i] = value.codePointAt(i) || 0;
+    data[offset + i] = value.charCodeAt(i);
   }
 }
 
