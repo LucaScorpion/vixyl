@@ -20,7 +20,7 @@ export default function parseVinylMeta(vinyl: Vinyl): VinylMeta | null {
 
   return ({
     trackStart,
-    sampleRate: 4096
+    sampleRate: 4000
   });
 }
 

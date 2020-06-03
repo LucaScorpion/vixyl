@@ -8,7 +8,7 @@ This project started thanks to a [tweet by Notch](https://twitter.com/notch/stat
 
 ![Turn Down for What vinyl](vinyl.png)
 
-Encoded in the spiral is an 8-bit mono 4096Hz audio track, containing 3 seconds of the song "Turn Down for What".
+Encoded in the spiral is an 8-bit mono 4000Hz audio track, containing 3 seconds of the song "Turn Down for What".
 
 ## Usage
 

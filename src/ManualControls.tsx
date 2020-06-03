@@ -10,7 +10,7 @@ export interface Props {
 const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
-  const [sampleRate, setSampleRate] = useState(4096);
+  const [sampleRate, setSampleRate] = useState(4000);
 
   useEffect((): void => {
     setVinylMeta({
