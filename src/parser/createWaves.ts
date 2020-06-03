@@ -27,7 +27,7 @@ function getWaveData(data: Uint8Array, format: WaveFormat): Uint8Array {
 function createRiffChunk(data: Uint8Array): Uint8Array {
   const chunk = new Uint8Array(12);
   encodeString(chunk, 0, 'RIFF');
-  encodeInt(chunk, 4, 8 + data.length); // TODO: Check this
+  encodeInt(chunk, 4, 36 + data.length); // Total chunk size, i.e. number of bytes following this number
   encodeString(chunk, 8, 'WAVE');
   return chunk;
 }

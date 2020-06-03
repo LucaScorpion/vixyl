@@ -26,3 +26,7 @@ Encoded in the spiral is an 8-bit mono 4096Hz audio track, containing 3 seconds 
 3. Run `npm start`, this will open a browser to http://localhost:3000/vixyl
 
 Any changes in the code should automatically reload the tab.
+
+## Sources
+
+Helpful WAVE file format information: http://tiny.systems/software/soundProgrammer/WavFormatDocs.pdf
