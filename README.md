@@ -4,7 +4,7 @@
 
 ## About
 
-Vixyl is a tool that allows you to read and create pixel art vinyls.
+Vixyl lets you read and create pixel art vinyls.
 
 This project started thanks to a [tweet by Notch](https://twitter.com/notch/status/490927655806853120), which contained just this image:
 
