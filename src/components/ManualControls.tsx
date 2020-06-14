@@ -63,7 +63,7 @@ const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
         </div>
       </div>
       <div className='row'>
-        Sample rate:
+        Sample rate (Hz):
         <input
           type='number'
           min={0}
