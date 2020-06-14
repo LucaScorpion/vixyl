@@ -64,7 +64,7 @@ const ReadVinylPage: React.FC = () => {
   }, [vinyl]);
 
   return (
-    <>
+    <main className='flex-center'>
       <div>
         <canvas
           ref={canvasRef}
@@ -133,7 +133,7 @@ const ReadVinylPage: React.FC = () => {
         <span>{loadingState}</span>
         {musicData && <audio controls src={musicData} style={{ width: '100%' }} />}
       </div>
-    </>
+    </main>
   );
 };
 

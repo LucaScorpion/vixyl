@@ -19,10 +19,6 @@ body {
   background: #EEE;
 }
 
-a {
-  text-decoration: none;
-}
-
 header {
   width: 100%;
   text-align: center;
@@ -32,6 +28,10 @@ header {
   display: flex;
   align-items: center;
   flex-direction: column;
+
+  a {
+    text-decoration: none;
+  }
 
   h1 {
     margin: 0;
@@ -47,14 +47,23 @@ header {
     }
 
     a:hover {
-      color: #CCC;
+      color: #BBB;
     }
   }
 }
 
-main {
+.content {
   display: flex;
   justify-content: center;
+
+  main {
+    width: 800px;
+
+    &.flex-center {
+      display: flex;
+      justify-content: center;
+    }
+  }
 
   .controls {
     width: 320px;
