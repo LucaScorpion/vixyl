@@ -18,7 +18,11 @@ const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
         x: startX,
         y: startY,
       },
-      sampleRate,
+      format: {
+        sampleRate,
+        bitsPerSample: 8,
+        channels: 1,
+      },
     });
   }, [setVinylMeta, startX, startY, sampleRate]);
 

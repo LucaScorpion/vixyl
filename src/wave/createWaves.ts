@@ -1,20 +1,18 @@
-import { base64ArrayBuffer } from './b64Encode';
+import { base64ArrayBuffer } from '../parser/b64Encode';
+import { getBlockAlign, getByteRate } from './WaveFormat';
+import { WaveData } from './WaveData';
 
-export interface WaveFormat {
-  sampleRate: number;
-}
-
-export default function createWaves(data: Uint8Array, format: WaveFormat): string {
-  const waveData = getWaveData(data, format);
-  const encodedData = base64ArrayBuffer(waveData);
+export default function createWaves(wave: WaveData): string {
+  const waveBinData = getWaveData(wave);
+  const encodedData = base64ArrayBuffer(waveBinData);
   return `data:audio/wav;base64,${encodedData}`;
 }
 
-function getWaveData(data: Uint8Array, format: WaveFormat): Uint8Array {
+function getWaveData(wave: WaveData): Uint8Array {
   // Create all the chunks.
-  const riffChunk = createRiffChunk(data);
-  const fmtChunk = createFmtChunk(format);
-  const dataChunk = createDataChunk(data);
+  const riffChunk = createRiffChunk(wave);
+  const fmtChunk = createFmtChunk(wave);
+  const dataChunk = createDataChunk(wave);
 
   // Concatenate the chunks.
   const waveData = new Uint8Array(riffChunk.length + fmtChunk.length + dataChunk.length);
@@ -34,12 +32,12 @@ function getWaveData(data: Uint8Array, format: WaveFormat): Uint8Array {
  * | ChunkSize | 4    | 36 + data size (or 4 + 8 + Subchunk1Size + 8 + Subchunk2Size)
  * | Format    | 4    | "WAVE" (hex: 57, 41, 56, 45)
  *
- * @param data The sound data used in the "data" subchunk.
+ * @param wave The wave data.
  */
-function createRiffChunk(data: Uint8Array): Uint8Array {
+function createRiffChunk(wave: WaveData): Uint8Array {
   const chunk = new Uint8Array(12);
   encodeString(chunk, 0, 'RIFF');
-  encodeInt(chunk, 4, 36 + data.length);
+  encodeInt(chunk, 4, 36 + wave.data.length);
   encodeString(chunk, 8, 'WAVE');
   return chunk;
 }
@@ -59,18 +57,18 @@ function createRiffChunk(data: Uint8Array): Uint8Array {
  * | BlockAlign    | 2    | Channels * (BitsPerSample / 8)
  * | BitsPerSample | 2    |
  *
- * @param format The sound format information.
+ * @param wave The wave data.
  */
-function createFmtChunk(format: WaveFormat): Uint8Array {
+function createFmtChunk(wave: WaveData): Uint8Array {
   const chunk = new Uint8Array(24);
   encodeString(chunk, 0, 'fmt ');
   encodeInt(chunk, 4, 16);
   encodeShort(chunk, 8, 1); // AudioFormat
-  encodeShort(chunk, 10, 1); // Channels
-  encodeInt(chunk, 12, format.sampleRate); // SampleRate
-  encodeInt(chunk, 16, format.sampleRate); // ByteRate
-  encodeShort(chunk, 20, 1); // BlockAlign
-  encodeShort(chunk, 22, 8); // BitsPerSample
+  encodeShort(chunk, 10, wave.format.channels); // Channels
+  encodeInt(chunk, 12, wave.format.sampleRate); // SampleRate
+  encodeInt(chunk, 16, getByteRate(wave.format)); // ByteRate
+  encodeShort(chunk, 20, getBlockAlign(wave.format)); // BlockAlign
+  encodeShort(chunk, 22, wave.format.bitsPerSample); // BitsPerSample
   return chunk;
 }
 
@@ -84,13 +82,13 @@ function createFmtChunk(format: WaveFormat): Uint8Array {
  * | ChunkSize | 4    | Length of Data, i.e.: Samples * Channels * (BitsPerSample / 8)
  * | Data      | ?    | Sound data
  *
- * @param data The sound data.
+ * @param wave The wave data.
  */
-function createDataChunk(data: Uint8Array): Uint8Array {
-  const chunk = new Uint8Array(8 + data.length);
+function createDataChunk(wave: WaveData): Uint8Array {
+  const chunk = new Uint8Array(8 + wave.data.length);
   encodeString(chunk, 0, 'data');
-  encodeInt(chunk, 4, data.length);
-  chunk.set(data, 8);
+  encodeInt(chunk, 4, wave.data.length);
+  chunk.set(wave.data, 8);
   return chunk;
 }
 

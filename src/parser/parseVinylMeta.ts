@@ -20,7 +20,11 @@ export default function parseVinylMeta(vinyl: Vinyl): VinylMeta | null {
 
   return ({
     trackStart,
-    sampleRate: 4000
+    format: {
+      channels: 1,
+      sampleRate: 4000,
+      bitsPerSample: 8,
+    },
   });
 }
 

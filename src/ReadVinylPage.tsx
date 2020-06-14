@@ -4,7 +4,7 @@ import { VinylMeta } from './parser/VinylMeta';
 import VinylParser from './parser/VinylParser';
 import parseVinylMeta from './parser/parseVinylMeta';
 import ManualControls from './components/ManualControls';
-import createWaves from './parser/createWaves';
+import createWaves from './wave/createWaves';
 import Icon from './components/Icon';
 
 const ReadVinylPage: React.FC = () => {
@@ -121,7 +121,10 @@ const ReadVinylPage: React.FC = () => {
               const parsedData = parser.parseVinyl(vinylMeta.trackStart);
               setLoadingState('Reconfiguring data streams to physical wave mechanics...');
               setTimeout(() => {
-                setMusicData(createWaves(parsedData, vinylMeta));
+                setMusicData(createWaves({
+                  data: parsedData,
+                  format: vinylMeta.format,
+                }));
                 setLoadingState('');
               }, 0);
             });
