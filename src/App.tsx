@@ -13,7 +13,7 @@ const App: React.FC = () => {
           <h1>Vixyl</h1>
         </Link>
         <nav>
-          <NavLink to='/about'>About</NavLink>
+          <NavLink to='/'>About</NavLink>
           <NavLink to='/read'>Read vinyl</NavLink>
           {/*<NavLink to='/create'>Create vinyl</NavLink>*/}
         </nav>
@@ -21,10 +21,10 @@ const App: React.FC = () => {
       <GithubCorner />
       <div className='content'>
         <Switch>
-          <Route exact path='/about' component={AboutPage} />
+          <Route exact path='/' component={AboutPage} />
           <Route exact path='/read' component={ReadVinylPage} />
           <Route exact path='/create' component={CreateVinylPage} />
-          <Redirect to='/about' />
+          <Redirect to='/' />
         </Switch>
       </div>
     </>
