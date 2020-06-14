@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { VinylMeta } from '../vinyl/VinylMeta';
 import VinylParser from '../vinyl/VinylParser';
+import useNumberState from '../hooks/useNumberState';
 
 export interface Props {
   parser: VinylParser;
@@ -8,9 +9,9 @@ export interface Props {
 }
 
 const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
-  const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
-  const [sampleRate, setSampleRate] = useState(4000);
+  const [startX, displayStartX, setStartX] = useNumberState(0);
+  const [startY, displayStartY, setStartY] = useNumberState(0);
+  const [sampleRate, displaySampleRate, setSampleRate] = useNumberState(4000);
 
   useEffect((): void => {
     setVinylMeta({
@@ -50,8 +51,8 @@ const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
           <input
             type='number'
             min={0}
-            onChange={(e) => setStartX(parseInt(e.currentTarget.value, 10))}
-            value={startX}
+            onChange={(e) => setStartX(e.currentTarget.value)}
+            value={displayStartX}
             style={{ marginLeft: 6 }}
           />
         </div>
@@ -60,8 +61,8 @@ const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
           <input
             type='number'
             min={0}
-            onChange={(e) => setStartY(parseInt(e.currentTarget.value, 10))}
-            value={startY}
+            onChange={(e) => setStartY(e.currentTarget.value)}
+            value={displayStartY}
             style={{ marginLeft: 6 }}
           />
         </div>
@@ -71,8 +72,8 @@ const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
         <input
           type='number'
           min={0}
-          onChange={(e) => setSampleRate(parseInt(e.currentTarget.value, 10))}
-          value={sampleRate}
+          onChange={(e) => setSampleRate(e.currentTarget.value)}
+          value={displaySampleRate}
           style={{ marginLeft: 6 }}
         />
       </div>
