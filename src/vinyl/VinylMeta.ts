@@ -1,4 +1,4 @@
-import { Point } from './Point';
+import { Point } from '../util/Point';
 import { WaveFormat } from '../wave/WaveFormat';
 
 export interface VinylMeta {

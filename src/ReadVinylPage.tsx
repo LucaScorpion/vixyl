@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Vinyl from './parser/Vinyl';
-import { VinylMeta } from './parser/VinylMeta';
-import VinylParser from './parser/VinylParser';
-import parseVinylMeta from './parser/parseVinylMeta';
+import Vinyl from './vinyl/Vinyl';
+import { VinylMeta } from './vinyl/VinylMeta';
+import VinylParser from './vinyl/VinylParser';
+import parseVinylMeta from './vinyl/parseVinylMeta';
 import ManualControls from './components/ManualControls';
 import createWaves from './wave/createWaves';
 import Icon from './components/Icon';

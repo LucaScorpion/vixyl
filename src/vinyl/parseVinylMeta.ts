@@ -1,6 +1,6 @@
 import { VinylMeta } from './VinylMeta';
 import Vinyl from './Vinyl';
-import { Pixel } from './Pixel';
+import { Pixel } from '../util/Pixel';
 
 export default function parseVinylMeta(vinyl: Vinyl): VinylMeta | null {
   // If the vinyl contains metadata, the top-left 5 pixels should decode to "Vixyl".

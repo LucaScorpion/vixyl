@@ -1,5 +1,5 @@
-import { Pixel } from './Pixel';
-import { isSamePoint, Point } from './Point';
+import { Pixel } from '../util/Pixel';
+import { isSamePoint, Point } from '../util/Point';
 import Vinyl from './Vinyl';
 
 export default class VinylParser {

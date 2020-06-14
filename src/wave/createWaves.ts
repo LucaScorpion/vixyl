@@ -1,4 +1,4 @@
-import { base64ArrayBuffer } from '../parser/b64Encode';
+import { base64ArrayBuffer } from '../util/b64Encode';
 import { getBlockAlign, getByteRate } from './WaveFormat';
 import { WaveData } from './WaveData';
 

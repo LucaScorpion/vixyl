@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { VinylMeta } from '../parser/VinylMeta';
-import VinylParser from '../parser/VinylParser';
+import { VinylMeta } from '../vinyl/VinylMeta';
+import VinylParser from '../vinyl/VinylParser';
 
 export interface Props {
   parser: VinylParser;

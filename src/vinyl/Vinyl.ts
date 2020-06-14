@@ -1,5 +1,5 @@
-import { isPoint, Point } from './Point';
-import { Pixel } from './Pixel';
+import { isPoint, Point } from '../util/Point';
+import { Pixel } from '../util/Pixel';
 
 export default class Vinyl {
   private readonly imageData: ImageData;
