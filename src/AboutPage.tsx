@@ -5,6 +5,8 @@ import vinyl from './images/vinyl.png';
 const AboutPage: React.FC = () => {
   return (
     <main>
+      <h3>Vixyl is a tool that allows you to read and create pixel art vinyls.</h3>
+
       <p>
         This project started thanks to a <ExternalLink href='https://twitter.com/notch/status/490927655806853120'>tweet
         by
