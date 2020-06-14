@@ -1,7 +1,7 @@
 import React from 'react';
 import ReadVinylPage from './ReadVinylPage';
 import GithubCorner from './components/GithubCorner';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
+import { Link, NavLink, Redirect, Route, Switch } from 'react-router-dom';
 import AboutPage from './AboutPage';
 import CreateVinylPage from './CreateVinylPage';
 
@@ -13,18 +13,18 @@ const App: React.FC = () => {
           <h1>Vixyl</h1>
         </Link>
         <nav>
-          <Link to='/'>About</Link>
-          <Link to='/read'>Read vinyl</Link>
-          <Link to='/create'>Create vinyl</Link>
+          <NavLink to='/about'>About</NavLink>
+          <NavLink to='/read'>Read vinyl</NavLink>
+          <NavLink to='/create'>Create vinyl</NavLink>
         </nav>
       </header>
       <GithubCorner />
       <div className='content'>
         <Switch>
-          <Route exact path='/' component={AboutPage} />
+          <Route exact path='/about' component={AboutPage} />
           <Route exact path='/read' component={ReadVinylPage} />
           <Route exact path='/create' component={CreateVinylPage} />
-          <Redirect to='/' />
+          <Redirect to='/about' />
         </Switch>
       </div>
     </>

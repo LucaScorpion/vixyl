@@ -44,10 +44,15 @@ header {
     a {
       color: #EEE;
       padding: 12px 16px;
-    }
 
-    a:hover {
-      color: #BBB;
+      &:hover {
+        color: #BBB;
+        text-decoration: underline;
+      }
+
+      &.active {
+        text-decoration: underline;
+      }
     }
   }
 }
