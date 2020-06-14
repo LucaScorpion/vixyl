@@ -1,6 +1,7 @@
 import { base64ArrayBuffer } from '../util/b64Encode';
 import { getBlockAlign, getByteRate } from './WaveFormat';
 import { WaveData } from './WaveData';
+import { encodeInt, encodeShort, encodeString } from '../util/encode';
 
 export default function createWaves(wave: WaveData): string {
   const waveBinData = getWaveData(wave);
@@ -90,20 +91,4 @@ function createDataChunk(wave: WaveData): Uint8Array {
   encodeInt(chunk, 4, wave.data.length);
   chunk.set(wave.data, 8);
   return chunk;
-}
-
-function encodeString(data: Uint8Array, offset: number, value: string): void {
-  for (let i = 0; i < value.length; i++) {
-    data[offset + i] = value.charCodeAt(i);
-  }
-}
-
-function encodeShort(data: Uint8Array, offset: number, value: number): void {
-  data[offset] = value & 0xFF;
-  data[offset + 1] = (value >> 8) & 0xFF;
-}
-
-function encodeInt(data: Uint8Array, offset: number, value: number): void {
-  encodeShort(data, offset, value);
-  encodeShort(data, offset + 2, value >> 16);
 }
