@@ -5,7 +5,7 @@
 $headerHeight: 64px;
 
 // Import all component styles
-@import "GithubCorner";
+@import "components/GithubCorner";
 
 // Global styling
 body {
@@ -38,10 +38,6 @@ header {
 main {
   display: flex;
   justify-content: center;
-
-  button:hover:enabled {
-    cursor: pointer;
-  }
 
   .controls {
     width: 320px;
