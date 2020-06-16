@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Icon from './components/Icon';
 import createSpiral from './vinyl/createSpiral';
 import { Spiral } from './vinyl/Spiral';
+import drawSpiral from './vinyl/drawSpiral';
 
 const CreateVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -16,21 +17,8 @@ const CreateVinylPage: React.FC = () => {
       return;
     }
 
-    context.clearRect(0, 0, spiralDiameter, spiralDiameter);
-    const center = spiralDiameter / 2;
-
-    // Draw the back circle.
-    context.fillStyle = 'black';
-    context.beginPath();
-    context.arc(center, center, spiralData.radius + 10, 0, 2 * Math.PI);
-    context.fill();
-
-    // Draw the spiral.
-    context.fillStyle = 'white';
-    spiralData.points.forEach((p) => {
-      context.fillRect(p.x + center, p.y + center, 1, 1);
-    });
-  }, [spiralData]);
+    drawSpiral(context, spiralData, spiralDiameter);
+  }, [spiralData, spiralDiameter]);
 
   return (
     <main className='flex-center'>
