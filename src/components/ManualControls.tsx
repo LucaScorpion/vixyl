@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { VinylMeta } from '../vinyl/VinylMeta';
 import VinylReader from '../vinyl/VinylReader';
 import useNumberState from '../hooks/useNumberState';
-import { VinylEncoding } from '../vinyl/VinylEncoding';
 
 export interface Props {
   parser: VinylReader;
@@ -25,7 +24,6 @@ const ManualControls: React.FC<Props> = ({ parser, setVinylMeta }) => {
         bitsPerSample: 8,
         channels: 1,
       },
-      encoding: VinylEncoding.GRAY,
     });
   }, [setVinylMeta, startX, startY, sampleRate]);
 

@@ -1,29 +1,9 @@
-import { Pixel } from '../util/Pixel';
-import { isSamePoint, Point } from '../util/Point';
+import { isDataPixel } from '../util/Pixel';
+import { Point } from '../util/Point';
 import Vinyl from './Vinyl';
 
 export default class VinylReader {
   constructor(private readonly vinyl: Vinyl) {
-  }
-
-  public readVinyl(trackStart: Point): Pixel[] {
-    const data: Pixel[] = [];
-
-    let prevPos = trackStart;
-    let pos: Point | null = trackStart;
-
-    while (pos) {
-      // Read the pixel data, push it.
-      let pixel = this.vinyl.getPixel(pos);
-      data.push(pixel);
-
-      // Get the next pixel position.
-      const nextPos = this.findNextPixel(prevPos, pos);
-      prevPos = pos;
-      pos = nextPos;
-    }
-
-    return data;
   }
 
   public detectStartingPoint(): Point | null {
@@ -34,7 +14,7 @@ export default class VinylReader {
         const pos = { x, y };
         const pixel = this.vinyl.getPixel(pos);
 
-        if (!this.isDataPixel(pixel)) {
+        if (isDataPixel(pixel)) {
           continue;
         }
 
@@ -53,7 +33,7 @@ export default class VinylReader {
 
             // Get the pixel data, check if it is valid.
             const data = this.vinyl.getPixel(nextPoint);
-            if (this.isDataPixel(data)) {
+            if (isDataPixel(data)) {
               hits++;
             }
           }
@@ -87,38 +67,5 @@ export default class VinylReader {
       minDist = this.vinyl.height - pos.y;
     }
     return minDist;
-  }
-
-  private findNextPixel(previous: Point, current: Point): Point | null {
-    for (let dX = -1; dX <= 1; dX++) {
-      for (let dY = -1; dY <= 1; dY++) {
-        const nextPoint = ({
-          x: current.x + dX,
-          y: current.y + dY,
-        });
-
-        // Check if the point is the same as the previous or current point.
-        if (isSamePoint(nextPoint, previous) || isSamePoint(nextPoint, current)) {
-          continue;
-        }
-
-        // Check if the point is in bounds.
-        if (!this.vinyl.isInBounds(nextPoint)) {
-          continue;
-        }
-
-        // Get the pixel data, check if it is valid.
-        const data = this.vinyl.getPixel(nextPoint);
-        if (this.isDataPixel(data)) {
-          return nextPoint;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  private isDataPixel(data: Pixel): boolean {
-    return (data.red !== 0 || data.green !== 0 || data.blue !== 0) && data.alpha !== 0;
   }
 }

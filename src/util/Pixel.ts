@@ -26,3 +26,7 @@ export function encodeInt24Pixel(value: number): Pixel {
 export function decodeInt24Pixel(pixel: Pixel): number {
   return pixel.red + (pixel.green << 8) + (pixel.blue << 16);
 }
+
+export function isDataPixel(data: Pixel): boolean {
+  return (data.red !== 0 || data.green !== 0 || data.blue !== 0) && data.alpha !== 0;
+}
