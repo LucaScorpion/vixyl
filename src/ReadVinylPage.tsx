@@ -103,6 +103,8 @@ const ReadVinylPage: React.FC = () => {
             marginRight: 48,
             width: image?.width,
             height: image?.height,
+            maxWidth: 800,
+            maxHeight: 800,
           }}
         />
       </div>
