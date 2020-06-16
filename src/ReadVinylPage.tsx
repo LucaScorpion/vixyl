@@ -1,11 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Vinyl from './vinyl/Vinyl';
 import { VinylMeta } from './vinyl/VinylMeta';
-import VinylParser from './vinyl/VinylParser';
+import VinylReader from './vinyl/VinylReader';
 import parseVinylMeta from './vinyl/parseVinylMeta';
 import ManualControls from './components/ManualControls';
 import createWaves from './wave/createWaves';
 import Icon from './components/Icon';
+import parseRainbowVinyl from './vinyl/parsers/parseRainbowVinyl';
+import { VinylEncoding } from './vinyl/VinylEncoding';
+import parseGrayVinyl from './vinyl/parsers/parseGrayVinyl';
 
 const ReadVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,8 +21,7 @@ const ReadVinylPage: React.FC = () => {
   const [manualControls, setManualControls] = useState(false);
 
   const [musicData, setMusicData] = useState('');
-  const [loadingState, setLoadingState] = useState('');
-  const [parser, setParser] = useState<VinylParser>();
+  const [parser, setParser] = useState<VinylReader>();
 
   useEffect((): void => {
     // Load the image.
@@ -60,8 +62,35 @@ const ReadVinylPage: React.FC = () => {
     }
 
     // Create the vinyl parser.
-    setParser(new VinylParser(vinyl));
+    setParser(new VinylReader(vinyl));
   }, [vinyl]);
+
+  const readVinyl = useCallback(() => {
+    if (!parser || !vinylMeta) {
+      return;
+    }
+
+    // Read and parse the vinyl.
+    const pixels = parser.readVinyl(vinylMeta.trackStart);
+    let parsedData: Uint8Array;
+    switch (vinylMeta.encoding) {
+      case VinylEncoding.GRAY:
+        parsedData = parseGrayVinyl(pixels);
+        break;
+      case VinylEncoding.RAINBOW:
+        parsedData = parseRainbowVinyl(pixels);
+        break;
+      default:
+        console.error('Unknown encoding:', vinylMeta.encoding);
+        return;
+    }
+
+    // Create the wave data.
+    setMusicData(createWaves({
+      data: parsedData,
+      format: vinylMeta.format,
+    }));
+  }, [parser, vinylMeta]);
 
   return (
     <main className='flex-center'>
@@ -112,29 +141,11 @@ const ReadVinylPage: React.FC = () => {
             padding: 12,
             marginBottom: 12,
           }}
-          onClick={(): void => {
-            if (!parser || !vinylMeta) {
-              return;
-            }
-
-            setLoadingState('Decoding vinylized data streams...');
-            setTimeout(() => {
-              const parsedData = parser.parseVinyl(vinylMeta.trackStart);
-              setLoadingState('Reconfiguring data streams to physical wave mechanics...');
-              setTimeout(() => {
-                setMusicData(createWaves({
-                  data: parsedData,
-                  format: vinylMeta.format,
-                }));
-                setLoadingState('');
-              }, 0);
-            });
-          }}
+          onClick={readVinyl}
           disabled={!parser || !vinylMeta}
         >
           Read <Icon icon='music' />
         </button>
-        <span>{loadingState}</span>
         {musicData && <audio controls src={musicData} style={{ width: '100%' }} />}
       </div>
     </main>

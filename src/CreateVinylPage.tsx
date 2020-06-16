@@ -2,9 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Icon from './components/Icon';
 import createSpiral from './vinyl/createSpiral';
 import { Spiral } from './vinyl/Spiral';
-import drawVinyl from './vinyl/drawVinyl';
+import drawVinylBase from './vinyl/drawVinylBase';
 import readWaves from './wave/readWaves';
 import { WaveData } from './wave/WaveData';
+import drawGrayVinyl from './vinyl/drawers/drawGrayVinyl';
+import drawRainbowVinyl from './vinyl/drawers/drawRainbowVinyl';
+import { VinylEncoding } from './vinyl/VinylEncoding';
 
 const CreateVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -12,17 +15,23 @@ const CreateVinylPage: React.FC = () => {
   const [spiralData, setSpiralData] = useState<Spiral>();
   const [spiralDiameter, setSpiralDiameter] = useState(0);
   const [waveData, setWaveData] = useState<WaveData>();
+  const [encoding, setEncoding] = useState(VinylEncoding.GRAY);
 
   const createVinyl = useCallback((): void => {
     if (!waveData) {
       return;
     }
 
+    let length = waveData.data.length;
+    if (encoding === VinylEncoding.RAINBOW) {
+      length = Math.floor(length / 3);
+    }
+
     // Create the spiral.
-    const spiral = createSpiral(waveData.data.length);
+    const spiral = createSpiral(length);
     setSpiralData(spiral);
     setSpiralDiameter(spiral.radius * 2 + 20);
-  }, [waveData]);
+  }, [waveData, encoding]);
 
   useEffect((): void => {
     // Draw the spiral.
@@ -30,8 +39,19 @@ const CreateVinylPage: React.FC = () => {
     if (!context || !spiralData || !waveData) {
       return;
     }
-    drawVinyl(context, spiralData, waveData);
-  }, [spiralData, waveData]);
+
+    drawVinylBase(context, spiralData, waveData, encoding);
+    switch (encoding) {
+      case VinylEncoding.GRAY:
+        drawGrayVinyl(context, spiralData, waveData);
+        break;
+      case VinylEncoding.RAINBOW:
+        drawRainbowVinyl(context, spiralData, waveData);
+        break;
+      default:
+        console.error('Invalid encoding method:', encoding);
+    }
+  }, [spiralData, spiralDiameter]);
 
   return (
     <main className='flex-center'>
@@ -77,6 +97,10 @@ const CreateVinylPage: React.FC = () => {
           }}
           className='row'
         />
+        <select className='row' onChange={e => setEncoding(parseInt(e.currentTarget.value, 10))}>
+          <option value={VinylEncoding.GRAY}>Gray</option>
+          <option value={VinylEncoding.RAINBOW}>Rainbow</option>
+        </select>
         <button
           style={{
             width: '100%',

@@ -9,11 +9,12 @@ export default function parseVinylMeta(vinyl: Vinyl): VinylMeta | null {
     return null;
   }
 
-  // y=1: startX, startY
+  // y=1: startX, startY, encoding
   const trackStart = {
     x: decodeInt24Pixel(vinyl.getPixel(0, 1)),
     y: decodeInt24Pixel(vinyl.getPixel(1, 1)),
   };
+  const encoding = vinyl.getPixel(2, 1).red;
 
   // y=2: sampleRate
   const sampleRate = decodeInt24Pixel(vinyl.getPixel(0, 2));
@@ -25,6 +26,7 @@ export default function parseVinylMeta(vinyl: Vinyl): VinylMeta | null {
       channels: 1,
       bitsPerSample: 8,
     },
+    encoding,
   });
 }
 

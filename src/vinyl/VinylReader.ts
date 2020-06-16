@@ -2,12 +2,12 @@ import { Pixel } from '../util/Pixel';
 import { isSamePoint, Point } from '../util/Point';
 import Vinyl from './Vinyl';
 
-export default class VinylParser {
+export default class VinylReader {
   constructor(private readonly vinyl: Vinyl) {
   }
 
-  public parseVinyl(trackStart: Point): Uint8Array {
-    const data: number[] = [];
+  public readVinyl(trackStart: Point): Pixel[] {
+    const data: Pixel[] = [];
 
     let prevPos = trackStart;
     let pos: Point | null = trackStart;
@@ -15,7 +15,7 @@ export default class VinylParser {
     while (pos) {
       // Read the pixel data, push it.
       let pixel = this.vinyl.getPixel(pos);
-      data.push(pixel.red);
+      data.push(pixel);
 
       // Get the next pixel position.
       const nextPos = this.findNextPixel(prevPos, pos);
@@ -23,7 +23,7 @@ export default class VinylParser {
       pos = nextPos;
     }
 
-    return new Uint8Array(data);
+    return data;
   }
 
   public detectStartingPoint(): Point | null {
