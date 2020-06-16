@@ -9,13 +9,13 @@ export default function parseVinylMeta(vinyl: Vinyl): VinylMeta | null {
     return null;
   }
 
-  // The RGB values of the first two pixels on y=1 encode the track starting position as an Int24.
+  // y=1: startX, startY
   const trackStart = {
     x: decodeInt24Pixel(vinyl.getPixel(0, 1)),
     y: decodeInt24Pixel(vinyl.getPixel(1, 1)),
   };
 
-  // The values on y=2 encode WAV format information.
+  // y=2: sampleRate
   const sampleRate = decodeInt24Pixel(vinyl.getPixel(0, 2));
 
   return ({

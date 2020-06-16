@@ -17,7 +17,7 @@ export default function drawVinyl(context: CanvasRenderingContext2D, spiralData:
   // y=1: startX, startY
   drawPixel(context, 0, 1, encodeInt24Pixel(startPos.x + center.x));
   drawPixel(context, 1, 1, encodeInt24Pixel(startPos.y + center.y));
-  // y=2:
+  // y=2: sampleRate
   drawPixel(context, 0, 2, encodeInt24Pixel(wave.format.sampleRate));
 
   // Draw the back circle.
