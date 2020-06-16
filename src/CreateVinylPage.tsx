@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Icon from './components/Icon';
 import createSpiral from './vinyl/createSpiral';
 import { Spiral } from './vinyl/Spiral';
-import drawSpiral from './vinyl/drawSpiral';
+import drawVinyl from './vinyl/drawVinyl';
 import readWaves from './wave/readWaves';
 import { WaveData } from './wave/WaveData';
 
@@ -13,7 +13,7 @@ const CreateVinylPage: React.FC = () => {
   const [spiralDiameter, setSpiralDiameter] = useState(0);
   const [waveData, setWaveData] = useState<WaveData>();
 
-  const drawVinyl = useCallback((): void => {
+  const createVinyl = useCallback((): void => {
     if (!waveData) {
       return;
     }
@@ -30,7 +30,7 @@ const CreateVinylPage: React.FC = () => {
     if (!context || !spiralData || !waveData) {
       return;
     }
-    drawSpiral(context, spiralData, waveData.data);
+    drawVinyl(context, spiralData, waveData);
   }, [spiralData, waveData]);
 
   return (
@@ -84,7 +84,7 @@ const CreateVinylPage: React.FC = () => {
             padding: 12,
             marginBottom: 12,
           }}
-          onClick={drawVinyl}
+          onClick={createVinyl}
           disabled={!waveData}
         >
           Create <Icon icon='compact-disc' />
