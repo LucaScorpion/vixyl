@@ -1,24 +1,37 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Icon from './components/Icon';
 import createSpiral from './vinyl/createSpiral';
 import { Spiral } from './vinyl/Spiral';
 import drawSpiral from './vinyl/drawSpiral';
+import readWaves from './wave/readWaves';
+import { WaveData } from './wave/WaveData';
 
 const CreateVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [musicData, setMusicData] = useState('');
   const [spiralData, setSpiralData] = useState<Spiral>();
   const [spiralDiameter, setSpiralDiameter] = useState(0);
+  const [waveData, setWaveData] = useState<WaveData>();
 
-  useEffect((): void => {
-    const context = canvasRef.current?.getContext('2d');
-    if (!context || !spiralData) {
+  const drawVinyl = useCallback((): void => {
+    if (!waveData) {
       return;
     }
 
-    drawSpiral(context, spiralData, spiralDiameter);
-  }, [spiralData, spiralDiameter]);
+    // Create the spiral.
+    const spiral = createSpiral(waveData.data.length);
+    setSpiralData(spiral);
+    setSpiralDiameter(spiral.radius * 2 + 20);
+  }, [waveData]);
+
+  useEffect((): void => {
+    // Draw the spiral.
+    const context = canvasRef.current?.getContext('2d');
+    if (!context || !spiralData || !waveData) {
+      return;
+    }
+    drawSpiral(context, spiralData, waveData.data);
+  }, [spiralData, waveData]);
 
   return (
     <main className='flex-center'>
@@ -45,22 +58,22 @@ const CreateVinylPage: React.FC = () => {
               return;
             }
 
+            // Clear the wave data.
+            setWaveData(undefined);
+
             // Read the file into state.
             const reader = new FileReader();
             reader.addEventListener('load', () => {
-              if (typeof reader.result === 'string') {
-                const dataUrl = reader.result;
-
-                // Check if the file is actually a wave file.
-                if (dataUrl.indexOf('data:audio/wav;base64,') !== 0) {
-                  console.error(`Incorrect file type: ${dataUrl.substring(5, dataUrl.indexOf(';'))}`);
+              if (reader.result && typeof reader.result === 'object') {
+                // Read the wave file.
+                const waves = readWaves(new Uint8Array(reader.result));
+                if (!waves) {
                   return;
                 }
-
-                setMusicData(reader.result);
+                setWaveData(waves);
               }
             });
-            reader.readAsDataURL(file);
+            reader.readAsArrayBuffer(file);
           }}
           className='row'
         />
@@ -71,11 +84,8 @@ const CreateVinylPage: React.FC = () => {
             padding: 12,
             marginBottom: 12,
           }}
-          onClick={() => {
-            const result = createSpiral(10000);
-            setSpiralData(result);
-            setSpiralDiameter(result.radius * 2 + 20);
-          }}
+          onClick={drawVinyl}
+          disabled={!waveData}
         >
           Create <Icon icon='compact-disc' />
         </button>

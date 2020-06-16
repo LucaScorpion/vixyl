@@ -25,7 +25,7 @@ export default function createSpiral(length: number): Spiral {
     }
 
     // Check if the next point touches the previous point;
-    if (Math.abs(nextPoint.x - previousPoint.x) > 1 || Math.abs(nextPoint.y - previousPoint.y) > 1) {
+    if (!isNeighbor(nextPoint, previousPoint)) {
       dT /= 2;
       return false;
     }
@@ -48,6 +48,11 @@ export default function createSpiral(length: number): Spiral {
       valid = isPointValid(nextPoint);
     }
 
+    // Check if the previous point can be removed.
+    if (i > 1 && isNeighbor(points[i - 2], nextPoint)) {
+      delete points[i--];
+    }
+
     // Check the radius.
     const absX = Math.abs(nextPoint.x);
     if (absX > radius) {
@@ -59,7 +64,7 @@ export default function createSpiral(length: number): Spiral {
     }
 
     // Store the next point, update the previous.
-    points.push(nextPoint);
+    points[i] = nextPoint;
     previousPoint = nextPoint;
 
     // Increase t.
@@ -67,7 +72,11 @@ export default function createSpiral(length: number): Spiral {
   }
 
   return ({
-    points,
+    points: points.reverse(),
     radius,
   });
+}
+
+function isNeighbor(a: Point, b: Point): boolean {
+  return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1;
 }
