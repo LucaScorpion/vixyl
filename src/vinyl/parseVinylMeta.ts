@@ -16,15 +16,16 @@ export default function parseVinylMeta(vinyl: Vinyl): VinylMeta | null {
   };
   const encoding = vinyl.getPixel(2, 1).red;
 
-  // y=2: sampleRate
+  // y=2: sampleRate, bitsPerSample
   const sampleRate = decodeInt24Pixel(vinyl.getPixel(0, 2));
+  const bitsPerSample = decodeInt24Pixel(vinyl.getPixel(1, 2));
 
   return ({
     trackStart,
     format: {
       sampleRate,
+      bitsPerSample,
       channels: 1,
-      bitsPerSample: 8,
     },
     encoding,
   });

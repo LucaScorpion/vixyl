@@ -11,7 +11,8 @@ export default function drawVinylBase(context: CanvasRenderingContext2D, spiralD
     y: context.canvas.height / 2,
   };
 
-  // Draw the metadata.
+  // Encode the metadata
+  // y=0: Vixyl
   ['V', 'i', 'x', 'y', 'l'].forEach((char, i) => {
     drawPixel(context, i, 0, grayPixel(char.charCodeAt(0)));
   });
@@ -20,8 +21,9 @@ export default function drawVinylBase(context: CanvasRenderingContext2D, spiralD
   drawPixel(context, 0, 1, encodeInt24Pixel(startPos.x + center.x));
   drawPixel(context, 1, 1, encodeInt24Pixel(startPos.y + center.y));
   drawPixel(context, 2, 1, grayPixel(encoding));
-  // y=2: sampleRate
+  // y=2: sampleRate, bitsPerSample
   drawPixel(context, 0, 2, encodeInt24Pixel(wave.format.sampleRate));
+  drawPixel(context, 1, 2, encodeInt24Pixel(wave.format.bitsPerSample));
 
   // Draw the back circle.
   context.fillStyle = 'black';
