@@ -80,6 +80,7 @@ const ReadVinylPage: React.FC = () => {
       <div className='controls'>
         <input
           type='file'
+          accept='image/*'
           onChange={(e) => {
             // Check if a file is selected.
             const file = e.currentTarget.files?.item(0);
