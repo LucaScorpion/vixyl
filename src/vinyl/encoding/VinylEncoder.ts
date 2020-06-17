@@ -45,6 +45,12 @@ export default abstract class VinylEncoder {
     context.arc(center.x, center.y, data.size / 2, 0, 2 * Math.PI);
     context.fill();
 
+    // Draw the inner circle.
+    context.fillStyle = 'white';
+    context.beginPath();
+    context.arc(center.x, center.y, data.points[data.points.length - 1].x - 5, 0, 2 * Math.PI);
+    context.fill();
+
     // Draw all the spiral pixels.
     for (let i = 0; i < data.points.length; i++) {
       const point = data.points[i];
