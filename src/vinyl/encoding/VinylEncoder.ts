@@ -1,9 +1,10 @@
 import { Spiral } from './Spiral';
 import { isSamePoint, Point } from '../../util/Point';
-import { drawPixel, encodeInt24Pixel, encodeStringGrayPixels, grayPixel, Pixel } from '../../util/Pixel';
+import { encodeInt24Pixel, encodeStringGrayPixels, grayPixel, Pixel } from '../../util/Pixel';
 import { VinylFormat } from '../VinylFormat';
 import { FileInfo } from '../FileInfo';
 import { SpiralData } from './SpiralData';
+import { drawCircle, drawPixel } from '../../util/draw';
 
 export default abstract class VinylEncoder {
   protected abstract getFormat(): VinylFormat;
@@ -11,6 +12,7 @@ export default abstract class VinylEncoder {
   protected abstract getPixels(data: Uint8Array): Pixel[];
 
   public encode(file: FileInfo): SpiralData {
+    // Get all pixels that need to be drawn.
     const pixels = [
       ...encodeStringGrayPixels('Vixyl'),   // Header
       grayPixel(this.getFormat()),          // Encoder type
@@ -39,17 +41,9 @@ export default abstract class VinylEncoder {
       y: context.canvas.height / 2,
     };
 
-    // Draw the back circle.
-    context.fillStyle = 'black';
-    context.beginPath();
-    context.arc(center.x, center.y, data.size / 2, 0, 2 * Math.PI);
-    context.fill();
-
-    // Draw the inner circle.
-    context.fillStyle = 'white';
-    context.beginPath();
-    context.arc(center.x, center.y, data.points[data.points.length - 1].x - 5, 0, 2 * Math.PI);
-    context.fill();
+    // Draw the back and inner circle.
+    drawCircle(context, center.x, center.y, data.size / 2, 'black');
+    drawCircle(context, center.x, center.y, data.points[data.points.length - 1].x - 5, 'white');
 
     // Draw all the spiral pixels.
     for (let i = 0; i < data.points.length; i++) {

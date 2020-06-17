@@ -34,8 +34,3 @@ export function isDataPixel(data: Pixel): boolean {
 export function encodeStringGrayPixels(text: string): Pixel[] {
   return text.split('').map(char => grayPixel(char.charCodeAt(0)));
 }
-
-export function drawPixel(context: CanvasRenderingContext2D, x: number, y: number, pixel: Pixel): void {
-  context.fillStyle = `rgba(${pixel.red}, ${pixel.green}, ${pixel.blue}, ${pixel.alpha})`;
-  context.fillRect(x, y, 1, 1);
-}
