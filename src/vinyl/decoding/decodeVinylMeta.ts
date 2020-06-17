@@ -1,11 +1,11 @@
-import Vinyl from '../Vinyl';
+import CanvasImage from '../CanvasImage';
 import { decodeInt24Pixel, Pixel } from '../../util/Pixel';
 import VinylDecoder from './VinylDecoder';
-import { VinylEncoding } from '../VinylEncoding';
+import { VinylFormat } from '../VinylFormat';
 import GrayVinylDecoder from './GrayVinylDecoder';
 import RainbowVinylDecoder from './RainbowVinylDecoder';
 
-export default function decodeVinylMeta(vinyl: Vinyl): VinylDecoder | null {
+export default function decodeVinylMeta(vinyl: CanvasImage): VinylDecoder | null {
   // If the vinyl contains metadata, the top-left 5 pixels should decode to "Vixyl".
   const hasMeta = ['V', 'i', 'x', 'y', 'l'].every((letter, i): boolean => isLetter(vinyl.getPixel(i, 0), letter));
   if (!hasMeta) {
@@ -17,7 +17,7 @@ export default function decodeVinylMeta(vinyl: Vinyl): VinylDecoder | null {
     x: decodeInt24Pixel(vinyl.getPixel(0, 1)),
     y: decodeInt24Pixel(vinyl.getPixel(1, 1)),
   };
-  const encoding: VinylEncoding = vinyl.getPixel(2, 1).red;
+  const encoding: VinylFormat = vinyl.getPixel(2, 1).red;
 
   // y=2: sampleRate, bitsPerSample
   const sampleRate = decodeInt24Pixel(vinyl.getPixel(0, 2));
@@ -33,9 +33,9 @@ export default function decodeVinylMeta(vinyl: Vinyl): VinylDecoder | null {
   });
 
   switch (encoding) {
-    case VinylEncoding.GRAY:
+    case VinylFormat.GRAY:
       return new GrayVinylDecoder(meta, vinyl);
-    case VinylEncoding.RAINBOW:
+    case VinylFormat.RAINBOW:
       return new RainbowVinylDecoder(meta, vinyl);
     default:
       console.error('Invalid encoding');

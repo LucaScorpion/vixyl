@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Vinyl from './vinyl/Vinyl';
-import decodeVinylMeta from './vinyl/decoders/decodeVinylMeta';
+import CanvasImage from './vinyl/CanvasImage';
+import decodeVinylMeta from './vinyl/decoding/decodeVinylMeta';
 import createWaves from './wave/createWaves';
 import Icon from './components/Icon';
-import VinylDecoder from './vinyl/decoders/VinylDecoder';
+import VinylDecoder from './vinyl/decoding/VinylDecoder';
 
 const ReadVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -11,7 +11,7 @@ const ReadVinylPage: React.FC = () => {
   const [imageData, setImageData] = useState('');
   const [image, setImage] = useState<HTMLImageElement>();
 
-  const [vinyl, setVinyl] = useState<Vinyl>();
+  const [vinyl, setVinyl] = useState<CanvasImage>();
   const [vinylDecoder, setVinylDecoder] = useState<VinylDecoder>();
 
   const [musicData, setMusicData] = useState('');
@@ -37,7 +37,7 @@ const ReadVinylPage: React.FC = () => {
     context.drawImage(image, 0, 0);
 
     // Load the vinyl from the context.
-    setVinyl(new Vinyl(context));
+    setVinyl(new CanvasImage(context));
   }, [image]);
 
   useEffect((): void => {

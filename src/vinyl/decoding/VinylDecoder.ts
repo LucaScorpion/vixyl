@@ -1,13 +1,13 @@
 import { isDataPixel, Pixel } from '../../util/Pixel';
 import { VinylMeta } from '../VinylMeta';
 import { isSamePoint, Point } from '../../util/Point';
-import Vinyl from '../Vinyl';
+import CanvasImage from '../CanvasImage';
 
 export default abstract class VinylDecoder {
-  constructor(public readonly meta: VinylMeta, private readonly vinyl: Vinyl) {
+  constructor(public readonly meta: VinylMeta, private readonly vinyl: CanvasImage) {
   }
 
-  abstract parsePixels(pixels: Pixel[]): Uint8Array;
+  protected abstract parsePixels(pixels: Pixel[]): Uint8Array;
 
   public decode(): Uint8Array {
     return this.parsePixels(this.readVinyl());

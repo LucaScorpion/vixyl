@@ -10,7 +10,7 @@ export function grayPixel(value: number): Pixel {
     red: value,
     green: value,
     blue: value,
-    alpha: 255,
+    alpha: 254,
   });
 }
 
@@ -19,7 +19,7 @@ export function encodeInt24Pixel(value: number): Pixel {
     red: value & 0xFF,
     green: (value >> 8) & 0xFF,
     blue: (value >> 16) & 0xFF,
-    alpha: 255,
+    alpha: 254,
   });
 }
 
@@ -28,5 +28,14 @@ export function decodeInt24Pixel(pixel: Pixel): number {
 }
 
 export function isDataPixel(data: Pixel): boolean {
-  return (data.red !== 0 || data.green !== 0 || data.blue !== 0) && data.alpha !== 0;
+  return data.alpha === 254;
+}
+
+export function encodeStringGrayPixels(text: string): Pixel[] {
+  return text.split('').map(char => grayPixel(char.charCodeAt(0)));
+}
+
+export function drawPixel(context: CanvasRenderingContext2D, x: number, y: number, pixel: Pixel): void {
+  context.fillStyle = `rgba(${pixel.red}, ${pixel.green}, ${pixel.blue}, ${pixel.alpha})`;
+  context.fillRect(x, y, 1, 1);
 }

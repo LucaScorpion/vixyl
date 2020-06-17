@@ -1,8 +1,8 @@
 import { Point } from '../../util/Point';
 import { isDataPixel } from '../../util/Pixel';
-import Vinyl from '../Vinyl';
+import CanvasImage from '../CanvasImage';
 
-export default function detectStartingPoint(vinyl: Vinyl): Point | null {
+export default function detectStartingPoint(vinyl: CanvasImage): Point | null {
   const options: Point[] = [];
 
   for (let x = 0; x < vinyl.width; x++) {
@@ -54,7 +54,7 @@ export default function detectStartingPoint(vinyl: Vinyl): Point | null {
   return closest;
 }
 
-function getDistanceToEdge(vinyl: Vinyl, pos: Point): number {
+function getDistanceToEdge(vinyl: CanvasImage, pos: Point): number {
   let minDist = pos.x < pos.y ? pos.x : pos.y;
   if (vinyl.width - pos.x < minDist) {
     minDist = vinyl.width - pos.x;
