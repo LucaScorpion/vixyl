@@ -56,11 +56,10 @@ export default abstract class VinylEncoder {
     const points: Point[] = [];
     let radius = 0;
 
-    const startT = Math.PI * 20;
     const a = 0.5;
 
     let dT = 0.1;
-    let t = startT - dT;
+    let t = Math.PI * 30;
     let previousPoint: Point | undefined;
 
     const self = this;
