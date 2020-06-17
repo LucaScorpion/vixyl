@@ -11,7 +11,6 @@ export default abstract class VinylEncoder {
   protected abstract getPixels(data: Uint8Array): Pixel[];
 
   public encode(file: FileInfo): SpiralData {
-    console.log(file.type);
     const pixels = [
       ...encodeStringGrayPixels('Vixyl'),   // Header
       grayPixel(this.getFormat()),          // Encoder type
