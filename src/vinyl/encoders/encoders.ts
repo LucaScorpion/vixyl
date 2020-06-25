@@ -1,15 +1,19 @@
-import { VixylEncoding } from './VixylEncoding';
 import RainbowSpiral from './RainbowSpiral';
 import GraySpiral from './GraySpiral';
 import EncoderDecoder from './EncoderDecoder';
 import CanvasImage from '../CanvasImage';
 
+export enum Encoding {
+  GRAY_SPIRAL,
+  RAINBOW_SPIRAL,
+}
+
 const encoders = {
-  [VixylEncoding.GRAY_SPIRAL]: GraySpiral,
-  [VixylEncoding.RAINBOW_SPIRAL]: RainbowSpiral,
+  [Encoding.GRAY_SPIRAL]: GraySpiral,
+  [Encoding.RAINBOW_SPIRAL]: RainbowSpiral,
 };
 
-export function getEncoder(encoding: VixylEncoding): EncoderDecoder<unknown> {
+export function getEncoder(encoding: Encoding): EncoderDecoder<unknown> {
   const Encoder = encoders[encoding];
   if (!Encoder) {
     throw new Error('Unknown encoding');

@@ -1,9 +1,8 @@
 import React, { CanvasHTMLAttributes, ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import Icon from './components/Icon';
-import { VixylEncoding } from './vinyl/encoders/VixylEncoding';
 import { FileInfo } from './vinyl/FileInfo';
 import { drawPixel } from './util/draw';
-import { getEncoder } from './vinyl/encoders/encoders';
+import { getEncoder, Encoding } from './vinyl/encoders/encoders';
 import EncoderDecoder, { EncodeFormOption } from './vinyl/encoders/EncoderDecoder';
 import FormOption from './vinyl/form/FormOption';
 
@@ -11,7 +10,7 @@ const CreateVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [fileInfo, setFileInfo] = useState<FileInfo>();
-  const [encoding, setEncoding] = useState(VixylEncoding.RAINBOW_SPIRAL);
+  const [encoding, setEncoding] = useState(Encoding.RAINBOW_SPIRAL);
   const [encoder, setEncoder] = useState<EncoderDecoder<unknown>>();
   const [encoderOptions, setEncoderOptions] = useState<{ [key: string]: unknown }>();
 
@@ -128,8 +127,8 @@ const CreateVinylPage: React.FC = () => {
         <input type='file' className='row' onChange={selectFile} />
 
         <select className='row' onChange={e => setEncoding(parseInt(e.currentTarget.value, 10))} value={encoding}>
-          <option value={VixylEncoding.GRAY_SPIRAL}>Gray Spiral</option>
-          <option value={VixylEncoding.RAINBOW_SPIRAL}>Rainbow Spiral</option>
+          <option value={Encoding.GRAY_SPIRAL}>Gray Spiral</option>
+          <option value={Encoding.RAINBOW_SPIRAL}>Rainbow Spiral</option>
         </select>
         {encoderOptions && encoder && encoder.getEncodeForm().map((option: EncodeFormOption) => (
           <div key={option.key} className='row'>
