@@ -1,4 +1,4 @@
-import { VixylEncoding } from '../VixylEncoding';
+import { VixylEncoding } from './VixylEncoding';
 import RainbowSpiral from './RainbowSpiral';
 import GraySpiral from './GraySpiral';
 import EncoderDecoder from './EncoderDecoder';

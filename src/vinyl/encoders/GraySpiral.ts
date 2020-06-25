@@ -1,4 +1,4 @@
-import { grayPixel, Pixel } from '../../util/Pixel';
+import Pixel, { grayPixel} from '../../util/Pixel';
 import SpiralBase from './SpiralBase';
 
 export default class GraySpiral extends SpiralBase {

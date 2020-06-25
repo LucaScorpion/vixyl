@@ -1,4 +1,4 @@
-export interface Pixel {
+export default interface Pixel {
   red: number;
   green: number;
   blue: number;

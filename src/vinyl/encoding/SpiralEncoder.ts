@@ -1,22 +1,19 @@
 import { Spiral } from './Spiral';
-import { isSamePoint, Point } from '../../util/Point';
-import { encodeInt24Pixel, encodeStringGrayPixels, grayPixel, Pixel } from '../../util/Pixel';
-import { VinylFormat } from '../VinylFormat';
+import Point, { isSamePoint } from '../../util/Point';
+import Pixel, { encodeInt24Pixel, encodeStringGrayPixels } from '../../util/Pixel';
 import { FileInfo } from '../FileInfo';
 import { SpiralData } from './SpiralData';
 import { drawCircle, drawPixel } from '../../util/draw';
 import { DrawOptions } from './DrawOptions';
 
 export default abstract class SpiralEncoder {
-  protected abstract getFormat(): VinylFormat;
-
   protected abstract getPixels(data: Uint8Array): Pixel[];
 
   public encode(file: FileInfo): SpiralData {
     // Get all pixels that need to be drawn.
     const pixels = [
       ...encodeStringGrayPixels('Vixyl'),   // Header
-      grayPixel(this.getFormat()),          // Encoder type
+      // grayPixel(this.getFormat()),          // Encoder type
       encodeInt24Pixel(file.type.length),   // File type length
       ...encodeStringGrayPixels(file.type), // File type
       encodeInt24Pixel(file.data.length),   // File length

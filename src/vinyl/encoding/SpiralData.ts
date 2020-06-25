@@ -1,5 +1,5 @@
-import { Pixel } from '../../util/Pixel';
-import { Point } from '../../util/Point';
+import Pixel from '../../util/Pixel';
+import Point from '../../util/Point';
 
 export interface SpiralData {
   points: Point[];

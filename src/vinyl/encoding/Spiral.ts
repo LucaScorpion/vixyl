@@ -1,4 +1,4 @@
-import { Point } from '../../util/Point';
+import Point from '../../util/Point';
 
 export interface Spiral {
   points: Point[];

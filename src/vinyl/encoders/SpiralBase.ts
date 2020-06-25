@@ -1,11 +1,10 @@
 import EncoderDecoder, { EncodeOptions } from './EncoderDecoder';
 import { Spiral } from '../encoding/Spiral';
-import { isSamePoint, Point } from '../../util/Point';
-import { decodeInt24Pixel, encodeInt24Pixel, encodeStringGrayPixels, Pixel } from '../../util/Pixel';
+import Point, { isSamePoint } from '../../util/Point';
+import Pixel, { decodeInt24Pixel, encodeInt24Pixel, encodeStringGrayPixels, isDataPixel} from '../../util/Pixel';
 import { drawCircle, drawPixel } from '../../util/draw';
 import { FileInfo } from '../FileInfo';
 import CanvasImage from '../CanvasImage';
-import readVinylTrack from '../decoding/readVinylTrack';
 
 export default abstract class SpiralBase implements EncoderDecoder {
   protected abstract getPixels(data: Uint8Array): Pixel[];
@@ -55,7 +54,7 @@ export default abstract class SpiralBase implements EncoderDecoder {
       y: decodeInt24Pixel(image.getPixel(1, 1)),
     };
 
-    const pixels = readVinylTrack(image, startingPoint);
+    const pixels = this.readVinylTrack(image, startingPoint);
 
     // Read the file type.
     const fileTypeLength = decodeInt24Pixel(pixels[0]);
@@ -153,5 +152,54 @@ export default abstract class SpiralBase implements EncoderDecoder {
 
   private isNeighbor(a: Point, b: Point): boolean {
     return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1;
+  }
+
+  private readVinylTrack(vinyl: CanvasImage, trackStart: Point): Pixel[] {
+    const data: Pixel[] = [];
+
+    let prevPos = trackStart;
+    let pos: Point | null = trackStart;
+
+    while (pos) {
+      // Read the pixel data, push it.
+      let pixel = vinyl.getPixel(pos);
+      data.push(pixel);
+
+      // Get the next pixel position.
+      const nextPos = this.findNextPixel(vinyl, prevPos, pos);
+      prevPos = pos;
+      pos = nextPos;
+    }
+
+    return data;
+  }
+
+  private findNextPixel(vinyl: CanvasImage, previous: Point, current: Point): Point | null {
+    for (let dX = -1; dX <= 1; dX++) {
+      for (let dY = -1; dY <= 1; dY++) {
+        const nextPoint = ({
+          x: current.x + dX,
+          y: current.y + dY,
+        });
+
+        // Check if the point is the same as the previous or current point.
+        if (isSamePoint(nextPoint, previous) || isSamePoint(nextPoint, current)) {
+          continue;
+        }
+
+        // Check if the point is in bounds.
+        if (!vinyl.isInBounds(nextPoint)) {
+          continue;
+        }
+
+        // Get the pixel data, check if it is valid.
+        const data = vinyl.getPixel(nextPoint);
+        if (isDataPixel(data)) {
+          return nextPoint;
+        }
+      }
+    }
+
+    return null;
   }
 }

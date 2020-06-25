@@ -1,7 +1,7 @@
 import React, { CanvasHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import Icon from './components/Icon';
 import { ChromePicker, ColorResult, RGBColor } from 'react-color';
-import { VixylEncoding } from './vinyl/VixylEncoding';
+import { VixylEncoding } from './vinyl/encoders/VixylEncoding';
 import { FileInfo } from './vinyl/FileInfo';
 import { drawPixel } from './util/draw';
 import { getEncoder } from './vinyl/encoders/encoders';

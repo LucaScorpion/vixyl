@@ -1,4 +1,4 @@
-import { Pixel } from '../../util/Pixel';
+import Pixel from '../../util/Pixel';
 import SpiralBase from './SpiralBase';
 
 export default class RainbowSpiral extends SpiralBase {

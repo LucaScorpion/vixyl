@@ -1,4 +1,4 @@
-import { decodeInt24Pixel, Pixel } from '../../util/Pixel';
+import Pixel, { decodeInt24Pixel } from '../../util/Pixel';
 import { DecodedData } from './DecodedData';
 
 export default abstract class VinylDecoder {
@@ -9,7 +9,7 @@ export default abstract class VinylDecoder {
     const fileTypeLength = decodeInt24Pixel(pixels[6]);
     let fileType = '';
     for (let i = 0; i < fileTypeLength; i++) {
-      fileType = `${fileType}${String.fromCharCode(pixels[7 + i].red)}`
+      fileType = `${fileType}${String.fromCharCode(pixels[7 + i].red)}`;
     }
     console.debug('File type:', fileTypeLength, fileType);
 

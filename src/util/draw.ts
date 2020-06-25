@@ -1,4 +1,4 @@
-import { Pixel } from './Pixel';
+import Pixel from './Pixel';
 
 export function drawPixel(context: CanvasRenderingContext2D, x: number, y: number, pixel: Pixel): void {
   context.fillStyle = `rgba(${pixel.red}, ${pixel.green}, ${pixel.blue}, ${pixel.alpha})`;

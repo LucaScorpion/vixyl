@@ -1,5 +1,5 @@
-import { isPoint, Point } from '../util/Point';
-import { Pixel } from '../util/Pixel';
+import Point, { isPoint } from '../util/Point';
+import Pixel from '../util/Pixel';
 
 export default class CanvasImage {
   private readonly imageData: ImageData;
