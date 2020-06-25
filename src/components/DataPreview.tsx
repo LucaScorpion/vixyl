@@ -1,5 +1,6 @@
 import React from 'react';
 import createDataUrl from '../util/createDataUrl';
+import Icon from './Icon';
 
 export interface Props {
   type: string;
@@ -7,20 +8,26 @@ export interface Props {
 }
 
 const DataPreview: React.FC<Props> = ({ type, data }) => {
+  const dataUrl = createDataUrl(type, data);
+
   if (type.indexOf('audio/') === 0) {
     return (
-      <audio controls src={createDataUrl(type, data)} style={{ width: '100%' }} />
+      <audio controls src={dataUrl} style={{ width: '100%' }} />
     );
   }
 
   if (type.indexOf('image/') === 0) {
     return (
-      <img src={createDataUrl(type, data)} />
+      <img src={dataUrl} alt='' />
     );
   }
 
   return (
-    <div></div>
+    <a download={'file'} href={dataUrl}>
+      <button className='big'>
+        Download <Icon icon='download' />
+      </button>
+    </a>
   );
 };
 

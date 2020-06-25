@@ -106,10 +106,8 @@ const ReadVinylPage: React.FC = () => {
         />
 
         <button
+          className='big'
           style={{
-            width: '100%',
-            fontSize: 24,
-            padding: 12,
             marginBottom: 12,
           }}
           onClick={readVinyl}
