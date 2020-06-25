@@ -32,7 +32,7 @@ export default abstract class VinylEncoder {
     });
   }
 
-  public draw(context: CanvasRenderingContext2D, data: SpiralData): void {
+  public async draw(context: CanvasRenderingContext2D, data: SpiralData, addQr: boolean): Promise<void> {
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
     // Get the canvas center.
@@ -44,6 +44,18 @@ export default abstract class VinylEncoder {
     // Draw the back and inner circle.
     drawCircle(context, center.x, center.y, data.size / 2, 'rgba(0, 0, 0, 0.99)');
     drawCircle(context, center.x, center.y, data.points[data.points.length - 1].x - 5, 'white');
+
+    // Add the QR code.
+    if (addQr) {
+      const qrImg = new Image();
+      await new Promise(res => {
+        qrImg.addEventListener('load', () => {
+          context.drawImage(qrImg, Math.round(center.x - qrImg.width / 2), Math.round(center.y - qrImg.height / 2));
+          res();
+        });
+        qrImg.src = 'vixyl/qr.png';
+      });
+    }
 
     // Draw all the spiral pixels.
     for (let i = 0; i < data.points.length; i++) {

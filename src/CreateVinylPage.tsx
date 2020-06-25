@@ -11,6 +11,7 @@ const CreateVinylPage: React.FC = () => {
   const [uploadedData, setUploadedData] = useState<Uint8Array>();
   const [fileType, setFileType] = useState('');
   const [format, setFormat] = useState(VinylFormat.RAINBOW);
+  const [addQr, setAddQr] = useState(true);
 
   const [encoder, setEncoder] = useState<VinylEncoder>();
   const [spiralData, setSpiralData] = useState<SpiralData>();
@@ -32,10 +33,9 @@ const CreateVinylPage: React.FC = () => {
     if (!encoder || !context || !spiralData) {
       return;
     }
-    encoder.draw(context, spiralData);
-
-    setImgDataUrl(context.canvas.toDataURL());
-  }, [spiralData, encoder]);
+    encoder.draw(context, spiralData, addQr)
+      .then(() => setImgDataUrl(context.canvas.toDataURL()));
+  }, [spiralData, encoder, addQr]);
 
   return (
     <main className='flex-center'>
@@ -78,10 +78,16 @@ const CreateVinylPage: React.FC = () => {
           }}
           className='row'
         />
+
         <select className='row' onChange={e => setFormat(parseInt(e.currentTarget.value, 10))} value={format}>
           <option value={VinylFormat.GRAY}>Gray</option>
           <option value={VinylFormat.RAINBOW}>Rainbow</option>
         </select>
+        <div style={{ marginBottom: 12 }}>
+          <input id='add-qr' type='checkbox' checked={addQr} onChange={(e) => setAddQr(e.currentTarget.checked)} />
+          <label htmlFor='add-qr'>Add QR code</label>
+        </div>
+
         <button
           className='big'
           style={{
