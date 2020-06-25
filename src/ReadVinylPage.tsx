@@ -15,6 +15,7 @@ const ReadVinylPage: React.FC = () => {
   const [vinyl, setVinyl] = useState<CanvasImage>();
 
   const [decodedData, setDecodedData] = useState<DecodedData>();
+  const [loading, setLoading] = useState(false);
 
   useEffect((): void => {
     // Load the image.
@@ -44,23 +45,32 @@ const ReadVinylPage: React.FC = () => {
     if (!vinyl) {
       return;
     }
+    setDecodedData(undefined);
+    setLoading(true);
 
-    // Detect the track starting point, read the pixels.
-    const startingPoint = detectStartingPoint(vinyl);
-    if (!startingPoint) {
-      console.error('No track starting point found.');
-      return;
-    }
-    const pixels = readVinylTrack(vinyl, startingPoint);
+    setTimeout(() => {
+      // Detect the track starting point, read the pixels.
+      const startingPoint = detectStartingPoint(vinyl);
+      if (!startingPoint) {
+        console.error('No track starting point found.');
+        setLoading(false);
+        return;
+      }
 
-    // Parse the vinyl metadata.
-    const decoder = decodeVinylMeta(pixels);
-    if (!decoder) {
-      return;
-    }
+      // Read all the pixels.
+      const pixels = readVinylTrack(vinyl, startingPoint);
 
-    // Decode the vinyl.
-    setDecodedData(decoder.decode(pixels));
+      // Parse the vinyl metadata.
+      const decoder = decodeVinylMeta(pixels);
+      if (!decoder) {
+        setLoading(false);
+        return;
+      }
+
+      // Decode the vinyl.
+      setDecodedData(decoder.decode(pixels));
+      setLoading(false);
+    }, 1);
   }, [vinyl]);
 
   return (
@@ -115,6 +125,11 @@ const ReadVinylPage: React.FC = () => {
         >
           Read <Icon icon='music' />
         </button>
+        {loading &&
+        <div className='big'>
+            <Icon icon='spinner' className='fa-pulse' /> Loading...
+        </div>
+        }
         {decodedData && <DataPreview type={decodedData.type} data={decodedData.data} />}
       </div>
     </main>

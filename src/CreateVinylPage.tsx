@@ -35,7 +35,7 @@ const CreateVinylPage: React.FC = () => {
     if (!encoder || !context || !spiralData) {
       return;
     }
-    setTimeout(() => encoder.draw(context, spiralData, addQr).then(() => setImgDataUrl(context.canvas.toDataURL())), 0);
+    setTimeout(() => encoder.draw(context, spiralData, addQr).then(() => setImgDataUrl(context.canvas.toDataURL())), 1);
   }, [spiralData, encoder, addQr]);
 
   return (
