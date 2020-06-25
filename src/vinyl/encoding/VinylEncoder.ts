@@ -43,9 +43,7 @@ export default abstract class VinylEncoder {
     };
 
     // Draw the back and inner circle.
-    context.globalAlpha = 0.99;
-    drawCircle(context, center.x, center.y, data.size / 2, options.bgColor);
-    context.globalAlpha = 1;
+    drawCircle(context, center.x, center.y, data.size / 2, `rgba(${options.bgColor.r}, ${options.bgColor.g}, ${options.bgColor.b}, ${options.bgColor.a})`);
     drawCircle(context, center.x, center.y, data.points[data.points.length - 1].x - 5, 'white');
 
     // Add the QR code.

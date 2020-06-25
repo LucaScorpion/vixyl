@@ -4,6 +4,7 @@ import { VinylFormat } from './vinyl/VinylFormat';
 import getVinylEncoder from './vinyl/encoding/getVinylEncoder';
 import VinylEncoder from './vinyl/encoding/VinylEncoder';
 import { SpiralData } from './vinyl/encoding/SpiralData';
+import { ChromePicker, ColorResult, RGBColor } from 'react-color';
 
 const CreateVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -12,7 +13,12 @@ const CreateVinylPage: React.FC = () => {
   const [fileType, setFileType] = useState('');
   const [format, setFormat] = useState(VinylFormat.RAINBOW);
   const [addQr, setAddQr] = useState(true);
-  const [bgColor, setBgColor] = useState('#000000');
+  const [bgColor, setBgColor] = useState<RGBColor>({
+    r: 0,
+    g: 0,
+    b: 0,
+    a: 0.99,
+  });
 
   const [encoder, setEncoder] = useState<VinylEncoder>();
   const [spiralData, setSpiralData] = useState<SpiralData>();
@@ -36,8 +42,20 @@ const CreateVinylPage: React.FC = () => {
     if (!encoder || !context || !spiralData) {
       return;
     }
-    setTimeout(() => encoder.draw(context, spiralData, { addQr, bgColor }).then(() => setImgDataUrl(context.canvas.toDataURL())), 1);
-  }, [spiralData, encoder, addQr, bgColor]);
+    setTimeout(() => encoder.draw(context, spiralData, {
+      addQr,
+      bgColor,
+    }).then(() => setImgDataUrl(context.canvas.toDataURL())), 1);
+  }, [spiralData, encoder, addQr]);
+
+  const updateBgColor = useCallback((c: ColorResult) => {
+    if (c.rgb.a == null) {
+      c.rgb.a = 1;
+    }
+
+    c.rgb.a = Math.min(c.rgb.a, 0.99);
+    setBgColor(c.rgb);
+  }, []);
 
   return (
     <main className='flex-center'>
@@ -91,8 +109,8 @@ const CreateVinylPage: React.FC = () => {
           <label htmlFor='add-qr'>Add QR code</label>
         </div>
         <div className='row'>
-          Background color:
-          <input style={{ marginLeft: 12, width: 64 }} value={bgColor} onChange={(e) => setBgColor(e.currentTarget.value)} />
+          Background color
+          <ChromePicker color={bgColor} onChange={updateBgColor} />
         </div>
 
         <button
