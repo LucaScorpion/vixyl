@@ -14,6 +14,7 @@ const CreateVinylPage: React.FC = () => {
 
   const [encoder, setEncoder] = useState<VinylEncoder>();
   const [spiralData, setSpiralData] = useState<SpiralData>();
+  const [imgDataUrl, setImgDataUrl] = useState('');
 
   const createVinyl = useCallback((): void => {
     // Encode the file.
@@ -32,6 +33,8 @@ const CreateVinylPage: React.FC = () => {
       return;
     }
     encoder.draw(context, spiralData);
+
+    setImgDataUrl(context.canvas.toDataURL());
   }, [spiralData, encoder]);
 
   return (
@@ -80,10 +83,8 @@ const CreateVinylPage: React.FC = () => {
           <option value={VinylFormat.RAINBOW}>Rainbow</option>
         </select>
         <button
+          className='big'
           style={{
-            width: '100%',
-            fontSize: 24,
-            padding: 12,
             marginBottom: 12,
           }}
           onClick={createVinyl}
@@ -91,6 +92,13 @@ const CreateVinylPage: React.FC = () => {
         >
           Create <Icon icon='compact-disc' />
         </button>
+        {imgDataUrl &&
+        <a download='vinyl.png' href={imgDataUrl}>
+            <button className='big'>
+                Save <Icon icon='image' />
+            </button>
+        </a>
+        }
       </div>
     </main>
   );
