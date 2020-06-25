@@ -10,7 +10,7 @@ const CreateVinylPage: React.FC = () => {
 
   const [uploadedData, setUploadedData] = useState<Uint8Array>();
   const [fileType, setFileType] = useState('');
-  const [format, setFormat] = useState(VinylFormat.GRAY);
+  const [format, setFormat] = useState(VinylFormat.RAINBOW);
 
   const [encoder, setEncoder] = useState<VinylEncoder>();
   const [spiralData, setSpiralData] = useState<SpiralData>();
@@ -75,7 +75,7 @@ const CreateVinylPage: React.FC = () => {
           }}
           className='row'
         />
-        <select className='row' onChange={e => setFormat(parseInt(e.currentTarget.value, 10))}>
+        <select className='row' onChange={e => setFormat(parseInt(e.currentTarget.value, 10))} value={format}>
           <option value={VinylFormat.GRAY}>Gray</option>
           <option value={VinylFormat.RAINBOW}>Rainbow</option>
         </select>
