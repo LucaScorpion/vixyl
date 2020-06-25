@@ -118,17 +118,6 @@ const CreateVinylPage: React.FC = () => {
 
   return (
     <main className='flex-center'>
-      <div>
-        <canvas
-          {...canvasProps}
-          ref={canvasRef}
-          style={{
-            marginRight: 48,
-            maxWidth: 800,
-            maxHeight: 800,
-          }}
-        />
-      </div>
       <div className='controls'>
         <input type='file' className='row' onChange={selectFile} />
 
@@ -161,6 +150,9 @@ const CreateVinylPage: React.FC = () => {
             <Icon icon='spinner' className='fa-pulse' /> Loading...
         </div>
         }
+      </div>
+      <div>
+        <canvas {...canvasProps} ref={canvasRef} />
       </div>
     </main>
   );

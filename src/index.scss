@@ -23,7 +23,6 @@ header {
   width: 100%;
   text-align: center;
   background-color: #222;
-  margin-bottom: 48px;
   height: $headerHeight;
   display: flex;
   align-items: center;
@@ -62,20 +61,34 @@ header {
   justify-content: center;
 
   main {
-    width: 1200px;
+    margin: 32px;
 
     &.flex-center {
       display: flex;
       justify-content: center;
     }
-  }
 
-  .controls {
-    width: 320px;
+    canvas {
+      margin-left: 64px;
+      max-width: calc(90vw - 320px);
+      max-height: calc(90vh - 80px);
+    }
 
-    .row {
-      width: 100%;
-      margin-bottom: 12px;
+    .controls {
+      width: 225px;
+
+      &.wide {
+        width: 450px;
+      }
+
+      .row {
+        width: 100%;
+        margin-bottom: 12px;
+      }
+
+      canvas {
+        margin-left: 0;
+      }
     }
   }
 }
@@ -85,4 +98,8 @@ header {
   font-size: 24px;
   padding: 12px;
   margin-bottom: 12px;
+}
+
+.center {
+  text-align: center;
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import CanvasImage from './vinyl/CanvasImage';
 import Icon from './components/Icon';
 import DataPreview from './components/DataPreview';
@@ -39,6 +39,26 @@ const ReadVinylPage: React.FC = () => {
     setVinyl(new CanvasImage(context));
   }, [image]);
 
+  const selectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    // Check if a file is selected.
+    const file = e.currentTarget.files?.item(0);
+    if (!file) {
+      return;
+    }
+
+    // Clear the previous decoded data.
+    setFileData(undefined);
+
+    // Read the file into state.
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      if (typeof reader.result === 'string') {
+        setImageData(reader.result);
+      }
+    });
+    reader.readAsDataURL(file);
+  }, []);
+
   const readVinyl = useCallback(async () => {
     if (!vinyl) {
       return;
@@ -57,45 +77,20 @@ const ReadVinylPage: React.FC = () => {
 
   return (
     <main className='flex-center'>
-      <div>
-        <canvas
-          ref={canvasRef}
-          width={image?.width}
-          height={image?.height}
-          style={{
-            marginRight: 48,
-            width: image?.width,
-            height: image?.height,
-            maxWidth: 800,
-            maxHeight: 800,
-          }}
-        />
-      </div>
-      <div className='controls'>
+      <div className='controls wide'>
         <input
           type='file'
           accept='image/*'
-          onChange={(e) => {
-            // Check if a file is selected.
-            const file = e.currentTarget.files?.item(0);
-            if (!file) {
-              return;
-            }
-
-            // Clear the previous decoded data.
-            setFileData(undefined);
-
-            // Read the file into state.
-            const reader = new FileReader();
-            reader.addEventListener('load', () => {
-              if (typeof reader.result === 'string') {
-                setImageData(reader.result);
-              }
-            });
-            reader.readAsDataURL(file);
-          }}
+          onChange={selectFile}
           className='row'
         />
+
+        <div className='center'>
+          <canvas ref={canvasRef} className='row' width={image?.width} height={image?.height} style={{
+            maxWidth: image?.width,
+            maxHeight: image?.height,
+          }} />
+        </div>
 
         <button
           className='big'
@@ -112,7 +107,9 @@ const ReadVinylPage: React.FC = () => {
             <Icon icon='spinner' className='fa-pulse' /> Loading...
         </div>
         }
-        {fileData && <DataPreview type={fileData.type} data={fileData.data} />}
+        <div className='center'>
+          {fileData && <DataPreview type={fileData.type} data={fileData.data} />}
+        </div>
       </div>
     </main>
   );

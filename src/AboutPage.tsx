@@ -4,7 +4,7 @@ import vinyl from './images/vinyl.png';
 
 const AboutPage: React.FC = () => {
   return (
-    <main>
+    <main style={{ maxWidth: 1000 }}>
       <h3>Vixyl lets you read and create pixel art vinyls.</h3>
 
       <p>
