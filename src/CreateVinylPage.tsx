@@ -1,16 +1,20 @@
-import React, { CanvasHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import React, { CanvasHTMLAttributes, ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import Icon from './components/Icon';
-import { ChromePicker, ColorResult, RGBColor } from 'react-color';
 import { VixylEncoding } from './vinyl/encoders/VixylEncoding';
 import { FileInfo } from './vinyl/FileInfo';
 import { drawPixel } from './util/draw';
 import { getEncoder } from './vinyl/encoders/encoders';
+import EncoderDecoder, { EncodeFormOption } from './vinyl/encoders/EncoderDecoder';
+import FormOption from './vinyl/form/FormOption';
 
 const CreateVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [fileInfo, setFileInfo] = useState<FileInfo>();
   const [encoding, setEncoding] = useState(VixylEncoding.RAINBOW_SPIRAL);
+  const [encoder, setEncoder] = useState<EncoderDecoder<unknown>>();
+  const [encoderOptions, setEncoderOptions] = useState<{ [key: string]: unknown }>();
+
   const [canvasProps, setCanvasProps] = useState<CanvasHTMLAttributes<HTMLCanvasElement>>({
     width: 0,
     height: 0,
@@ -19,23 +23,54 @@ const CreateVinylPage: React.FC = () => {
   const [imgDataUrl, setImgDataUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [addQr, setAddQr] = useState(true);
-  const [bgColor, setBgColor] = useState<RGBColor>({
-    r: 0,
-    g: 0,
-    b: 0,
-    a: 0.99,
-  });
+  useEffect(() => {
+    // Get the encoder.
+    const enc = getEncoder(encoding);
+    setEncoder(enc);
+
+    // Populate the encoder options with the default values.
+    const opts: { [key: string]: unknown } = {};
+    enc.getEncodeForm().forEach(opt => opts[opt.key] = opt.defaultValue);
+    setEncoderOptions(opts);
+  }, [encoding]);
+
+  const selectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    // Check if a file is selected.
+    const file = e.currentTarget.files?.item(0);
+    if (!file) {
+      return;
+    }
+
+    // Clear the old data.
+    setFileInfo(undefined);
+    setImgDataUrl('');
+    setCanvasProps({
+      width: 0,
+      height: 0,
+    });
+
+    // Read the file contents.
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      if (reader.result && typeof reader.result === 'object') {
+        // Store the file data in state.
+        setFileInfo({
+          type: file.type,
+          data: new Uint8Array(reader.result),
+        });
+      }
+    });
+    reader.readAsArrayBuffer(file);
+  }, []);
 
   const createVinyl = useCallback(async (): Promise<void> => {
     const context = canvasRef.current?.getContext('2d');
-    if (!fileInfo || !context) {
+    if (!fileInfo || !context || !encoder) {
       return;
     }
 
     setLoading(true);
-    const enc = getEncoder(encoding);
-    await enc.encode(fileInfo, {
+    await encoder.encode(fileInfo, {
       setCanvasProps: async (props): Promise<CanvasRenderingContext2D> => {
         // Create a promise which resolves as soon as the canvas props propagate.
         const canvasPropsPromise = new Promise(resolve => {
@@ -48,6 +83,7 @@ const CreateVinylPage: React.FC = () => {
 
         return context;
       },
+      form: encoderOptions,
     });
 
     // Set the top-left identifying pixels.
@@ -66,7 +102,7 @@ const CreateVinylPage: React.FC = () => {
 
     setImgDataUrl(context.canvas.toDataURL());
     setLoading(false);
-  }, [fileInfo, encoding]);
+  }, [fileInfo, encoding, encoder, encoderOptions]);
 
   useEffect(() => {
     // Resolve the canvas props propagation promise.
@@ -74,15 +110,6 @@ const CreateVinylPage: React.FC = () => {
       canvasPropsResolve();
     }
   }, [canvasProps]);
-
-  const updateBgColor = useCallback((c: ColorResult) => {
-    if (c.rgb.a == null) {
-      c.rgb.a = 1;
-    }
-
-    c.rgb.a = Math.min(c.rgb.a, 0.99);
-    setBgColor(c.rgb);
-  }, []);
 
   return (
     <main className='flex-center'>
@@ -98,61 +125,23 @@ const CreateVinylPage: React.FC = () => {
         />
       </div>
       <div className='controls'>
-        <input
-          type='file'
-          onChange={(e) => {
-            // Check if a file is selected.
-            const file = e.currentTarget.files?.item(0);
-            if (!file) {
-              return;
-            }
+        <input type='file' className='row' onChange={selectFile} />
 
-            // Clear the old data.
-            setFileInfo(undefined);
-            setImgDataUrl('');
-            setCanvasProps({
-              width: 0,
-              height: 0,
-            });
-
-            // Read the file contents.
-            const reader = new FileReader();
-            reader.addEventListener('load', () => {
-              if (reader.result && typeof reader.result === 'object') {
-                // Store the file data in state.
-                setFileInfo({
-                  type: file.type,
-                  data: new Uint8Array(reader.result),
-                });
-              }
-            });
-            reader.readAsArrayBuffer(file);
-          }}
-          className='row'
-        />
-
-        {/* Encoder options */}
         <select className='row' onChange={e => setEncoding(parseInt(e.currentTarget.value, 10))} value={encoding}>
-          <option value={VixylEncoding.GRAY_SPIRAL}>Gray</option>
-          <option value={VixylEncoding.RAINBOW_SPIRAL}>Rainbow</option>
+          <option value={VixylEncoding.GRAY_SPIRAL}>Gray Spiral</option>
+          <option value={VixylEncoding.RAINBOW_SPIRAL}>Rainbow Spiral</option>
         </select>
-        <div style={{ marginBottom: 12 }}>
-          <input id='add-qr' type='checkbox' checked={addQr} onChange={(e) => setAddQr(e.currentTarget.checked)} />
-          <label htmlFor='add-qr'>Add QR code</label>
-        </div>
-        <div className='row'>
-          Background color
-          <ChromePicker color={bgColor} onChange={updateBgColor} />
-        </div>
+        {encoderOptions && encoder && encoder.getEncodeForm().map((option: EncodeFormOption) => (
+          <div key={option.key} className='row'>
+            <FormOption
+              {...option}
+              value={encoderOptions[option.key]}
+              onChange={val => setEncoderOptions(prevState => ({ ...prevState, [option.key]: val }))}
+            />
+          </div>
+        ))}
 
-        <button
-          className='big'
-          style={{
-            marginBottom: 12,
-          }}
-          onClick={createVinyl}
-          disabled={!fileInfo}
-        >
+        <button className='big' onClick={createVinyl} disabled={!fileInfo}>
           Create <Icon icon='compact-disc' />
         </button>
         {imgDataUrl &&
@@ -162,11 +151,10 @@ const CreateVinylPage: React.FC = () => {
             </button>
         </a>
         }
-        {
-          loading &&
-          <div className='big'>
-              <Icon icon='spinner' className='fa-pulse' /> Loading...
-          </div>
+        {loading &&
+        <div className='big'>
+            <Icon icon='spinner' className='fa-pulse' /> Loading...
+        </div>
         }
       </div>
     </main>

@@ -1,17 +1,48 @@
-import EncoderDecoder, { EncodeOptions } from './EncoderDecoder';
-import { Spiral } from '../encoding/Spiral';
+import EncoderDecoder, { EncodeFormOption, EncodeOptions } from './EncoderDecoder';
 import Point, { isSamePoint } from '../../util/Point';
-import Pixel, { decodeInt24Pixel, encodeInt24Pixel, encodeStringGrayPixels, isDataPixel} from '../../util/Pixel';
+import Pixel, { decodeInt24Pixel, encodeInt24Pixel, encodeStringGrayPixels, isDataPixel } from '../../util/Pixel';
 import { drawCircle, drawPixel } from '../../util/draw';
 import { FileInfo } from '../FileInfo';
 import CanvasImage from '../CanvasImage';
+import { RGBColor } from 'react-color';
 
-export default abstract class SpiralBase implements EncoderDecoder {
+export interface Options {
+  addQr: boolean;
+  bgColor: RGBColor;
+}
+
+export interface Spiral {
+  points: Point[];
+  radius: number;
+}
+
+export default abstract class SpiralBase implements EncoderDecoder<Options> {
   protected abstract getPixels(data: Uint8Array): Pixel[];
 
   protected abstract getBytes(pixels: Pixel[]): Uint8Array;
 
-  public async encode(file: FileInfo, options: EncodeOptions): Promise<void> {
+  public getEncodeForm(): EncodeFormOption[] {
+    return [
+      {
+        key: 'addQr',
+        type: 'boolean',
+        text: 'Add QR code',
+        defaultValue: true,
+      },
+      {
+        key: 'bgColor',
+        type: 'color',
+        text: 'Background color',
+        defaultValue: {
+          r: 0,
+          g: 0,
+          b: 0,
+        },
+      },
+    ];
+  }
+
+  public async encode(file: FileInfo, options: EncodeOptions<Options>): Promise<void> {
     const pixels = [
       encodeInt24Pixel(file.type.length),   // File type length
       ...encodeStringGrayPixels(file.type), // File type
@@ -32,9 +63,23 @@ export default abstract class SpiralBase implements EncoderDecoder {
       y: Math.round(context.canvas.height / 2),
     };
 
-    // Draw the back and inner circle.
-    drawCircle(context, center.x, center.y, size / 2, 'rgba(0, 0, 0, 0.99)');
+    // Draw the background circle.
+    const bgColor = options.form.bgColor;
+    const alpha = Math.min(bgColor.a == null ? 1 : bgColor.a, 0.99);
+    drawCircle(context, center.x, center.y, size / 2, `rgba(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, ${alpha})`);
+
+    // Draw the inner circle and QR code.
     drawCircle(context, center.x, center.y, spiral.points[spiral.points.length - 1].x - 5, 'white');
+    if (options.form.addQr) {
+      const qrImg = new Image();
+      await new Promise(res => {
+        qrImg.addEventListener('load', () => {
+          context.drawImage(qrImg, Math.round(center.x - qrImg.width / 2), Math.round(center.y - qrImg.height / 2));
+          res();
+        });
+        qrImg.src = 'vixyl/qr.png';
+      });
+    }
 
     // Draw all the spiral pixels.
     for (let i = 0; i < spiral.points.length; i++) {

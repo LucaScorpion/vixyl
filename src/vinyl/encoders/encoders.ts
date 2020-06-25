@@ -9,7 +9,7 @@ const encoders = {
   [VixylEncoding.RAINBOW_SPIRAL]: RainbowSpiral,
 };
 
-export function getEncoder(encoding: VixylEncoding): EncoderDecoder {
+export function getEncoder(encoding: VixylEncoding): EncoderDecoder<unknown> {
   const Encoder = encoders[encoding];
   if (!Encoder) {
     throw new Error('Unknown encoding');
@@ -17,7 +17,7 @@ export function getEncoder(encoding: VixylEncoding): EncoderDecoder {
   return new Encoder();
 }
 
-export function getDecoder(vinyl: CanvasImage): EncoderDecoder {
+export function getDecoder(vinyl: CanvasImage): EncoderDecoder<unknown> {
   const vix = vinyl.getPixel(0, 0);
   const yl = vinyl.getPixel(1, 0);
 
