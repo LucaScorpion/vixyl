@@ -12,8 +12,8 @@ export default class RainbowVinylEncoder extends VinylEncoder {
     for (let i = 0; i < data.length; i += 3) {
       pixels.push({
         red: data[i],
-        green: data[i + 1],
-        blue: data[i + 2],
+        green: data[i + 1] || 0,
+        blue: data[i + 2] || 0,
         alpha: 255,
       });
     }
