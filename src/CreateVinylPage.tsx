@@ -2,7 +2,7 @@ import React, { CanvasHTMLAttributes, ChangeEvent, useCallback, useEffect, useRe
 import Icon from './components/Icon';
 import { FileInfo } from './vinyl/FileInfo';
 import { drawPixel } from './util/draw';
-import { getEncoder, Encoding } from './vinyl/encoders/encoders';
+import { Encoding, getEncoder } from './vinyl/encoders/encoders';
 import EncoderDecoder, { EncodeFormOption } from './vinyl/encoders/EncoderDecoder';
 import FormOption from './vinyl/form/FormOption';
 
@@ -27,9 +27,15 @@ const CreateVinylPage: React.FC = () => {
     const enc = getEncoder(encoding);
     setEncoder(enc);
 
-    // Populate the encoder options with the default values.
+    // Populate the encoder options with the default values, keeping matching values from the previous options.
     const opts: { [key: string]: unknown } = {};
-    enc.getEncodeForm().forEach(opt => opts[opt.key] = opt.defaultValue);
+    enc.getEncodeForm().forEach(opt => {
+      if (encoderOptions && encoderOptions[opt.key] != null) {
+        opts[opt.key] = encoderOptions[opt.key];
+      } else {
+        opts[opt.key] = opt.defaultValue;
+      }
+    });
     setEncoderOptions(opts);
   }, [encoding]);
 
