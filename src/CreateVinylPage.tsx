@@ -2,8 +2,9 @@ import React, { CanvasHTMLAttributes, useCallback, useEffect, useRef, useState }
 import Icon from './components/Icon';
 import { ChromePicker, ColorResult, RGBColor } from 'react-color';
 import { VixylEncoding } from './vinyl/VixylEncoding';
-import getEncoder from './vinyl/encoders/getEncoder';
 import { FileInfo } from './vinyl/FileInfo';
+import { drawPixel } from './util/draw';
+import { getEncoder } from './vinyl/encoders/encoders';
 
 const CreateVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -48,9 +49,23 @@ const CreateVinylPage: React.FC = () => {
         return context;
       },
     });
-    setLoading(false);
+
+    // Set the top-left identifying pixels.
+    drawPixel(context, 0, 0, {
+      red: 86,    // V
+      green: 105, // i
+      blue: 120,  // x,
+      alpha: 255,
+    });
+    drawPixel(context, 1, 0, {
+      red: 121,   // y
+      green: 108, // l
+      blue: encoding,
+      alpha: 255,
+    });
 
     setImgDataUrl(context.canvas.toDataURL());
+    setLoading(false);
   }, [fileInfo, encoding]);
 
   useEffect(() => {

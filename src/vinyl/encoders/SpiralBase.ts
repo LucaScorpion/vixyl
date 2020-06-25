@@ -1,17 +1,22 @@
 import EncoderDecoder, { EncodeOptions } from './EncoderDecoder';
 import { Spiral } from '../encoding/Spiral';
 import { isSamePoint, Point } from '../../util/Point';
-import { encodeInt24Pixel, encodeStringGrayPixels, Pixel } from '../../util/Pixel';
+import { decodeInt24Pixel, encodeInt24Pixel, encodeStringGrayPixels, Pixel } from '../../util/Pixel';
 import { drawCircle, drawPixel } from '../../util/draw';
 import { FileInfo } from '../FileInfo';
+import CanvasImage from '../CanvasImage';
+import readVinylTrack from '../decoding/readVinylTrack';
 
 export default abstract class SpiralBase implements EncoderDecoder {
   protected abstract getPixels(data: Uint8Array): Pixel[];
+
+  protected abstract getBytes(pixels: Pixel[]): Uint8Array;
 
   public async encode(file: FileInfo, options: EncodeOptions): Promise<void> {
     const pixels = [
       encodeInt24Pixel(file.type.length),   // File type length
       ...encodeStringGrayPixels(file.type), // File type
+      encodeInt24Pixel(file.data.length),   // Data length
       ...this.getPixels(file.data),         // Data
     ];
     const spiral = this.createSpiral(pixels.length);
@@ -37,9 +42,39 @@ export default abstract class SpiralBase implements EncoderDecoder {
       const point = spiral.points[i];
       drawPixel(context, point.x + center.x, point.y + center.y, pixels[i]);
     }
+
+    // Encode the starting point on y=1.
+    const startingPoint = spiral.points[0];
+    drawPixel(context, 0, 1, encodeInt24Pixel(startingPoint.x + center.x));
+    drawPixel(context, 1, 1, encodeInt24Pixel(startingPoint.y + center.y));
   }
 
-  protected createSpiral(length: number): Spiral {
+  public decode(image: CanvasImage): FileInfo {
+    const startingPoint = {
+      x: decodeInt24Pixel(image.getPixel(0, 1)),
+      y: decodeInt24Pixel(image.getPixel(1, 1)),
+    };
+
+    const pixels = readVinylTrack(image, startingPoint);
+
+    // Read the file type.
+    const fileTypeLength = decodeInt24Pixel(pixels[0]);
+    let type = '';
+    for (let i = 0; i < fileTypeLength; i++) {
+      type = `${type}${String.fromCharCode(pixels[i + 1].red)}`;
+    }
+
+    // Read the data.
+    const dataLength = decodeInt24Pixel(pixels[fileTypeLength + 1]);
+    const data = this.getBytes(pixels.slice(fileTypeLength + 2)).slice(0, dataLength);
+
+    return ({
+      type,
+      data,
+    });
+  }
+
+  private createSpiral(length: number): Spiral {
     const points: Point[] = [];
     let radius = 0;
 

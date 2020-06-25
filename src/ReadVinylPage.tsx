@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CanvasImage from './vinyl/CanvasImage';
 import Icon from './components/Icon';
-import detectStartingPoint from './vinyl/decoding/detectStartingPoint';
-import readVinylTrack from './vinyl/decoding/readVinylTrack';
-import decodeVinylMeta from './vinyl/decoding/decodeVinylMeta';
 import DataPreview from './components/DataPreview';
-import { DecodedData } from './vinyl/decoding/DecodedData';
+import { FileInfo } from './vinyl/FileInfo';
+import { getDecoder } from './vinyl/encoders/encoders';
 
 const ReadVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,7 +12,7 @@ const ReadVinylPage: React.FC = () => {
   const [image, setImage] = useState<HTMLImageElement>();
   const [vinyl, setVinyl] = useState<CanvasImage>();
 
-  const [decodedData, setDecodedData] = useState<DecodedData>();
+  const [fileData, setFileData] = useState<FileInfo>();
   const [loading, setLoading] = useState(false);
 
   useEffect((): void => {
@@ -41,36 +39,20 @@ const ReadVinylPage: React.FC = () => {
     setVinyl(new CanvasImage(context));
   }, [image]);
 
-  const readVinyl = useCallback(() => {
+  const readVinyl = useCallback(async () => {
     if (!vinyl) {
       return;
     }
-    setDecodedData(undefined);
+    setFileData(undefined);
+
+    const decoder = getDecoder(vinyl);
+    if (!decoder) {
+      return;
+    }
+
     setLoading(true);
-
-    setTimeout(() => {
-      // Detect the track starting point, read the pixels.
-      const startingPoint = detectStartingPoint(vinyl);
-      if (!startingPoint) {
-        console.error('No track starting point found.');
-        setLoading(false);
-        return;
-      }
-
-      // Read all the pixels.
-      const pixels = readVinylTrack(vinyl, startingPoint);
-
-      // Parse the vinyl metadata.
-      const decoder = decodeVinylMeta(pixels);
-      if (!decoder) {
-        setLoading(false);
-        return;
-      }
-
-      // Decode the vinyl.
-      setDecodedData(decoder.decode(pixels));
-      setLoading(false);
-    }, 1);
+    setFileData(await decoder.decode(vinyl));
+    setLoading(false);
   }, [vinyl]);
 
   return (
@@ -101,7 +83,7 @@ const ReadVinylPage: React.FC = () => {
             }
 
             // Clear the previous decoded data.
-            setDecodedData(undefined);
+            setFileData(undefined);
 
             // Read the file into state.
             const reader = new FileReader();
@@ -130,7 +112,7 @@ const ReadVinylPage: React.FC = () => {
             <Icon icon='spinner' className='fa-pulse' /> Loading...
         </div>
         }
-        {decodedData && <DataPreview type={decodedData.type} data={decodedData.data} />}
+        {fileData && <DataPreview type={fileData.type} data={fileData.data} />}
       </div>
     </main>
   );
