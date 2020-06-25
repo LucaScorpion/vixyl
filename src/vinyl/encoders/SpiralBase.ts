@@ -1,67 +1,41 @@
-import { Spiral } from './Spiral';
+import EncoderDecoder, { EncodeOptions } from './EncoderDecoder';
+import { Spiral } from '../encoding/Spiral';
 import { isSamePoint, Point } from '../../util/Point';
-import { encodeInt24Pixel, encodeStringGrayPixels, grayPixel, Pixel } from '../../util/Pixel';
-import { VinylFormat } from '../VinylFormat';
-import { FileInfo } from '../FileInfo';
-import { SpiralData } from './SpiralData';
+import { encodeInt24Pixel, encodeStringGrayPixels, Pixel } from '../../util/Pixel';
 import { drawCircle, drawPixel } from '../../util/draw';
-import { DrawOptions } from './DrawOptions';
+import { FileInfo } from '../FileInfo';
 
-export default abstract class VinylEncoder {
-  protected abstract getFormat(): VinylFormat;
-
+export default abstract class SpiralBase implements EncoderDecoder {
   protected abstract getPixels(data: Uint8Array): Pixel[];
 
-  public encode(file: FileInfo): SpiralData {
-    // Get all pixels that need to be drawn.
+  public async encode(file: FileInfo, options: EncodeOptions): Promise<void> {
     const pixels = [
-      ...encodeStringGrayPixels('Vixyl'),   // Header
-      grayPixel(this.getFormat()),          // Encoder type
       encodeInt24Pixel(file.type.length),   // File type length
       ...encodeStringGrayPixels(file.type), // File type
-      encodeInt24Pixel(file.data.length),   // File length
       ...this.getPixels(file.data),         // Data
     ];
-
-    // Create the spiral.
     const spiral = this.createSpiral(pixels.length);
 
-    return ({
-      pixels,
-      points: spiral.points,
-      size: spiral.radius * 2 + 10,
+    const size = spiral.radius * 2 + 10;
+    const context = await options.setCanvasProps({
+      width: size,
+      height: size,
     });
-  }
 
-  public async draw(context: CanvasRenderingContext2D, data: SpiralData, options: DrawOptions): Promise<void> {
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-
-    // Get the canvas center.
     const center = {
-      x: context.canvas.width / 2,
-      y: context.canvas.height / 2,
+      x: Math.round(context.canvas.width / 2),
+      y: Math.round(context.canvas.height / 2),
     };
 
     // Draw the back and inner circle.
-    drawCircle(context, center.x, center.y, data.size / 2, `rgba(${options.bgColor.r}, ${options.bgColor.g}, ${options.bgColor.b}, ${options.bgColor.a})`);
-    drawCircle(context, center.x, center.y, data.points[data.points.length - 1].x - 5, 'white');
-
-    // Add the QR code.
-    if (options.addQr) {
-      const qrImg = new Image();
-      await new Promise(res => {
-        qrImg.addEventListener('load', () => {
-          context.drawImage(qrImg, Math.round(center.x - qrImg.width / 2), Math.round(center.y - qrImg.height / 2));
-          res();
-        });
-        qrImg.src = 'vixyl/qr.png';
-      });
-    }
+    drawCircle(context, center.x, center.y, size / 2, 'rgba(0, 0, 0, 0.99)');
+    drawCircle(context, center.x, center.y, spiral.points[spiral.points.length - 1].x - 5, 'white');
 
     // Draw all the spiral pixels.
-    for (let i = 0; i < data.points.length; i++) {
-      const point = data.points[i];
-      drawPixel(context, point.x + center.x, point.y + center.y, data.pixels[i]);
+    for (let i = 0; i < spiral.points.length; i++) {
+      const point = spiral.points[i];
+      drawPixel(context, point.x + center.x, point.y + center.y, pixels[i]);
     }
   }
 

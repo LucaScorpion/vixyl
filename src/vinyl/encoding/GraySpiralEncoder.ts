@@ -1,8 +1,8 @@
-import VinylEncoder from './VinylEncoder';
+import SpiralEncoder from './SpiralEncoder';
 import { grayPixel, Pixel } from '../../util/Pixel';
 import { VinylFormat } from '../VinylFormat';
 
-export default class GrayVinylEncoder extends VinylEncoder {
+export default class GraySpiralEncoder extends SpiralEncoder {
   protected getFormat(): VinylFormat {
     return VinylFormat.GRAY;
   }

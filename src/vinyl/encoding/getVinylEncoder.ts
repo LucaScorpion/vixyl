@@ -1,14 +1,14 @@
-import VinylEncoder from './VinylEncoder';
+import SpiralEncoder from './SpiralEncoder';
 import { VinylFormat } from '../VinylFormat';
-import GrayVinylEncoder from './GrayVinylEncoder';
-import RainbowVinylEncoder from './RainbowVinylEncoder';
+import GraySpiralEncoder from './GraySpiralEncoder';
+import RainbowSpiralEncoder from './RainbowSpiralEncoder';
 
-export default function getVinylEncoder(format: VinylFormat): VinylEncoder {
+export default function getVinylEncoder(format: VinylFormat): SpiralEncoder {
   switch (format) {
     case VinylFormat.GRAY:
-      return new GrayVinylEncoder();
+      return new GraySpiralEncoder();
     case VinylFormat.RAINBOW:
-      return new RainbowVinylEncoder();
+      return new RainbowSpiralEncoder();
     default:
       throw new Error('Unknown encoding format');
   }

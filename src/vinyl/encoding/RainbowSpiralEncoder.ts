@@ -1,8 +1,8 @@
-import VinylEncoder from './VinylEncoder';
+import SpiralEncoder from './SpiralEncoder';
 import { Pixel } from '../../util/Pixel';
 import { VinylFormat } from '../VinylFormat';
 
-export default class RainbowVinylEncoder extends VinylEncoder {
+export default class RainbowSpiralEncoder extends SpiralEncoder {
   protected getFormat(): VinylFormat {
     return VinylFormat.RAINBOW;
   }

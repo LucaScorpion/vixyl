@@ -1,17 +1,23 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { CanvasHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import Icon from './components/Icon';
-import { VinylFormat } from './vinyl/VinylFormat';
-import getVinylEncoder from './vinyl/encoding/getVinylEncoder';
-import VinylEncoder from './vinyl/encoding/VinylEncoder';
-import { SpiralData } from './vinyl/encoding/SpiralData';
 import { ChromePicker, ColorResult, RGBColor } from 'react-color';
+import { VixylEncoding } from './vinyl/VixylEncoding';
+import getEncoder from './vinyl/encoders/getEncoder';
+import { FileInfo } from './vinyl/FileInfo';
 
 const CreateVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [uploadedData, setUploadedData] = useState<Uint8Array>();
-  const [fileType, setFileType] = useState('');
-  const [format, setFormat] = useState(VinylFormat.RAINBOW);
+  const [fileInfo, setFileInfo] = useState<FileInfo>();
+  const [encoding, setEncoding] = useState(VixylEncoding.RAINBOW_SPIRAL);
+  const [canvasProps, setCanvasProps] = useState<CanvasHTMLAttributes<HTMLCanvasElement>>({
+    width: 0,
+    height: 0,
+  });
+  const [canvasPropsResolve, setCanvasPropsResolve] = useState<() => void>();
+  const [imgDataUrl, setImgDataUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const [addQr, setAddQr] = useState(true);
   const [bgColor, setBgColor] = useState<RGBColor>({
     r: 0,
@@ -20,33 +26,39 @@ const CreateVinylPage: React.FC = () => {
     a: 0.99,
   });
 
-  const [encoder, setEncoder] = useState<VinylEncoder>();
-  const [spiralData, setSpiralData] = useState<SpiralData>();
-  const [imgDataUrl, setImgDataUrl] = useState('');
-
-  const createVinyl = useCallback((): void => {
-    // Encode the file.
-    if (!uploadedData) {
-      return;
-    }
-    const enc = getVinylEncoder(format);
-    setEncoder(enc);
-    setSpiralData(enc.encode({ type: fileType, data: uploadedData }));
-  }, [uploadedData, format, fileType]);
-
-  useEffect((): void => {
-    setImgDataUrl('');
-
-    // Update the canvas.
+  const createVinyl = useCallback(async (): Promise<void> => {
     const context = canvasRef.current?.getContext('2d');
-    if (!encoder || !context || !spiralData) {
+    if (!fileInfo || !context) {
       return;
     }
-    setTimeout(() => encoder.draw(context, spiralData, {
-      addQr,
-      bgColor,
-    }).then(() => setImgDataUrl(context.canvas.toDataURL())), 1);
-  }, [spiralData, encoder, addQr]);
+
+    setLoading(true);
+    const enc = getEncoder(encoding);
+    await enc.encode(fileInfo, {
+      setCanvasProps: async (props): Promise<CanvasRenderingContext2D> => {
+        // Create a promise which resolves as soon as the canvas props propagate.
+        const canvasPropsPromise = new Promise(resolve => {
+          setCanvasPropsResolve(() => resolve);
+        });
+
+        // Set the canvas props, wait for the state change to propagate.
+        setCanvasProps(props);
+        await canvasPropsPromise;
+
+        return context;
+      },
+    });
+    setLoading(false);
+
+    setImgDataUrl(context.canvas.toDataURL());
+  }, [fileInfo, encoding]);
+
+  useEffect(() => {
+    // Resolve the canvas props propagation promise.
+    if (canvasPropsResolve) {
+      canvasPropsResolve();
+    }
+  }, [canvasProps]);
 
   const updateBgColor = useCallback((c: ColorResult) => {
     if (c.rgb.a == null) {
@@ -61,13 +73,10 @@ const CreateVinylPage: React.FC = () => {
     <main className='flex-center'>
       <div>
         <canvas
+          {...canvasProps}
           ref={canvasRef}
-          width={spiralData?.size}
-          height={spiralData?.size}
           style={{
             marginRight: 48,
-            width: spiralData?.size,
-            height: spiralData?.size,
             maxWidth: 800,
             maxHeight: 800,
           }}
@@ -83,15 +92,23 @@ const CreateVinylPage: React.FC = () => {
               return;
             }
 
-            // Clear the data.
-            setUploadedData(undefined);
+            // Clear the old data.
+            setFileInfo(undefined);
+            setImgDataUrl('');
+            setCanvasProps({
+              width: 0,
+              height: 0,
+            });
 
-            // Read the data into state.
-            setFileType(file.type);
+            // Read the file contents.
             const reader = new FileReader();
             reader.addEventListener('load', () => {
               if (reader.result && typeof reader.result === 'object') {
-                setUploadedData(new Uint8Array(reader.result));
+                // Store the file data in state.
+                setFileInfo({
+                  type: file.type,
+                  data: new Uint8Array(reader.result),
+                });
               }
             });
             reader.readAsArrayBuffer(file);
@@ -100,9 +117,9 @@ const CreateVinylPage: React.FC = () => {
         />
 
         {/* Encoder options */}
-        <select className='row' onChange={e => setFormat(parseInt(e.currentTarget.value, 10))} value={format}>
-          <option value={VinylFormat.GRAY}>Gray</option>
-          <option value={VinylFormat.RAINBOW}>Rainbow</option>
+        <select className='row' onChange={e => setEncoding(parseInt(e.currentTarget.value, 10))} value={encoding}>
+          <option value={VixylEncoding.GRAY_SPIRAL}>Gray</option>
+          <option value={VixylEncoding.RAINBOW_SPIRAL}>Rainbow</option>
         </select>
         <div style={{ marginBottom: 12 }}>
           <input id='add-qr' type='checkbox' checked={addQr} onChange={(e) => setAddQr(e.currentTarget.checked)} />
@@ -119,7 +136,7 @@ const CreateVinylPage: React.FC = () => {
             marginBottom: 12,
           }}
           onClick={createVinyl}
-          disabled={!uploadedData}
+          disabled={!fileInfo}
         >
           Create <Icon icon='compact-disc' />
         </button>
@@ -131,7 +148,7 @@ const CreateVinylPage: React.FC = () => {
         </a>
         }
         {
-          spiralData && !imgDataUrl &&
+          loading &&
           <div className='big'>
               <Icon icon='spinner' className='fa-pulse' /> Loading...
           </div>
