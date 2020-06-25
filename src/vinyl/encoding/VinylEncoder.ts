@@ -5,6 +5,7 @@ import { VinylFormat } from '../VinylFormat';
 import { FileInfo } from '../FileInfo';
 import { SpiralData } from './SpiralData';
 import { drawCircle, drawPixel } from '../../util/draw';
+import { DrawOptions } from './DrawOptions';
 
 export default abstract class VinylEncoder {
   protected abstract getFormat(): VinylFormat;
@@ -32,7 +33,7 @@ export default abstract class VinylEncoder {
     });
   }
 
-  public async draw(context: CanvasRenderingContext2D, data: SpiralData, addQr: boolean): Promise<void> {
+  public async draw(context: CanvasRenderingContext2D, data: SpiralData, options: DrawOptions): Promise<void> {
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
     // Get the canvas center.
@@ -42,11 +43,13 @@ export default abstract class VinylEncoder {
     };
 
     // Draw the back and inner circle.
-    drawCircle(context, center.x, center.y, data.size / 2, 'rgba(0, 0, 0, 0.99)');
+    context.globalAlpha = 0.99;
+    drawCircle(context, center.x, center.y, data.size / 2, options.bgColor);
+    context.globalAlpha = 1;
     drawCircle(context, center.x, center.y, data.points[data.points.length - 1].x - 5, 'white');
 
     // Add the QR code.
-    if (addQr) {
+    if (options.addQr) {
       const qrImg = new Image();
       await new Promise(res => {
         qrImg.addEventListener('load', () => {

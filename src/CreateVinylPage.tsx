@@ -12,6 +12,7 @@ const CreateVinylPage: React.FC = () => {
   const [fileType, setFileType] = useState('');
   const [format, setFormat] = useState(VinylFormat.RAINBOW);
   const [addQr, setAddQr] = useState(true);
+  const [bgColor, setBgColor] = useState('#000000');
 
   const [encoder, setEncoder] = useState<VinylEncoder>();
   const [spiralData, setSpiralData] = useState<SpiralData>();
@@ -35,8 +36,8 @@ const CreateVinylPage: React.FC = () => {
     if (!encoder || !context || !spiralData) {
       return;
     }
-    setTimeout(() => encoder.draw(context, spiralData, addQr).then(() => setImgDataUrl(context.canvas.toDataURL())), 1);
-  }, [spiralData, encoder, addQr]);
+    setTimeout(() => encoder.draw(context, spiralData, { addQr, bgColor }).then(() => setImgDataUrl(context.canvas.toDataURL())), 1);
+  }, [spiralData, encoder, addQr, bgColor]);
 
   return (
     <main className='flex-center'>
@@ -80,6 +81,7 @@ const CreateVinylPage: React.FC = () => {
           className='row'
         />
 
+        {/* Encoder options */}
         <select className='row' onChange={e => setFormat(parseInt(e.currentTarget.value, 10))} value={format}>
           <option value={VinylFormat.GRAY}>Gray</option>
           <option value={VinylFormat.RAINBOW}>Rainbow</option>
@@ -87,6 +89,10 @@ const CreateVinylPage: React.FC = () => {
         <div style={{ marginBottom: 12 }}>
           <input id='add-qr' type='checkbox' checked={addQr} onChange={(e) => setAddQr(e.currentTarget.checked)} />
           <label htmlFor='add-qr'>Add QR code</label>
+        </div>
+        <div className='row'>
+          Background color:
+          <input style={{ marginLeft: 12, width: 64 }} value={bgColor} onChange={(e) => setBgColor(e.currentTarget.value)} />
         </div>
 
         <button
