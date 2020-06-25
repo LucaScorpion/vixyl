@@ -1,20 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CanvasImage from './vinyl/CanvasImage';
-import decodeVinylMeta from './vinyl/decoding/decodeVinylMeta';
-import createWaves from './wave/createWaves';
 import Icon from './components/Icon';
-import VinylDecoder from './vinyl/decoding/VinylDecoder';
+import detectStartingPoint from './vinyl/decoding/detectStartingPoint';
+import readVinylTrack from './vinyl/decoding/readVinylTrack';
+import decodeVinylMeta from './vinyl/decoding/decodeVinylMeta';
+import DataPreview from './components/DataPreview';
+import { DecodedData } from './vinyl/decoding/DecodedData';
 
 const ReadVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [imageData, setImageData] = useState('');
   const [image, setImage] = useState<HTMLImageElement>();
-
   const [vinyl, setVinyl] = useState<CanvasImage>();
-  const [vinylDecoder, setVinylDecoder] = useState<VinylDecoder>();
 
-  const [musicData, setMusicData] = useState('');
+  const [decodedData, setDecodedData] = useState<DecodedData>();
 
   useEffect((): void => {
     // Load the image.
@@ -40,32 +40,28 @@ const ReadVinylPage: React.FC = () => {
     setVinyl(new CanvasImage(context));
   }, [image]);
 
-  useEffect((): void => {
+  const readVinyl = useCallback(() => {
     if (!vinyl) {
       return;
     }
 
-    // Parse the vinyl metadata.
-    const decoder = decodeVinylMeta(vinyl);
-    if (decoder) {
-      setVinylDecoder(decoder);
+    // Detect the track starting point, read the pixels.
+    const startingPoint = detectStartingPoint(vinyl);
+    if (!startingPoint) {
+      console.error('No track starting point found.');
+      return;
     }
-  }, [vinyl]);
+    const pixels = readVinylTrack(vinyl, startingPoint);
 
-  const readVinyl = useCallback(() => {
-    if (!vinylDecoder) {
+    // Parse the vinyl metadata.
+    const decoder = decodeVinylMeta(pixels);
+    if (!decoder) {
       return;
     }
 
     // Decode the vinyl.
-    const data = vinylDecoder.decode();
-
-    // Create the wave data.
-    setMusicData(createWaves({
-      data,
-      format: vinylDecoder.meta.format,
-    }));
-  }, [vinylDecoder]);
+    setDecodedData(decoder.decode(pixels));
+  }, [vinyl]);
 
   return (
     <main className='flex-center'>
@@ -94,8 +90,8 @@ const ReadVinylPage: React.FC = () => {
               return;
             }
 
-            // Clear the previous sound data.
-            setMusicData('');
+            // Clear the previous decoded data.
+            setDecodedData(undefined);
 
             // Read the file into state.
             const reader = new FileReader();
@@ -117,11 +113,11 @@ const ReadVinylPage: React.FC = () => {
             marginBottom: 12,
           }}
           onClick={readVinyl}
-          disabled={!vinylDecoder}
+          disabled={!vinyl}
         >
           Read <Icon icon='music' />
         </button>
-        {musicData && <audio controls src={musicData} style={{ width: '100%' }} />}
+        {decodedData && <DataPreview type={decodedData.type} data={decodedData.data} />}
       </div>
     </main>
   );

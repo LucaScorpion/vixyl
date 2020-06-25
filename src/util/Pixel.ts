@@ -10,7 +10,7 @@ export function grayPixel(value: number): Pixel {
     red: value,
     green: value,
     blue: value,
-    alpha: 254,
+    alpha: 255,
   });
 }
 
@@ -19,7 +19,7 @@ export function encodeInt24Pixel(value: number): Pixel {
     red: value & 0xFF,
     green: (value >> 8) & 0xFF,
     blue: (value >> 16) & 0xFF,
-    alpha: 254,
+    alpha: 255,
   });
 }
 
@@ -28,7 +28,7 @@ export function decodeInt24Pixel(pixel: Pixel): number {
 }
 
 export function isDataPixel(data: Pixel): boolean {
-  return data.alpha === 254;
+  return data.alpha === 255;
 }
 
 export function encodeStringGrayPixels(text: string): Pixel[] {

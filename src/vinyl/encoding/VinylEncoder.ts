@@ -42,7 +42,7 @@ export default abstract class VinylEncoder {
     };
 
     // Draw the back and inner circle.
-    drawCircle(context, center.x, center.y, data.size / 2, 'black');
+    drawCircle(context, center.x, center.y, data.size / 2, 'rgba(0, 0, 0, 0.99)');
     drawCircle(context, center.x, center.y, data.points[data.points.length - 1].x - 5, 'white');
 
     // Draw all the spiral pixels.

@@ -14,7 +14,7 @@ export default class RainbowVinylEncoder extends VinylEncoder {
         red: data[i],
         green: data[i + 1],
         blue: data[i + 2],
-        alpha: 254,
+        alpha: 255,
       });
     }
     return pixels;

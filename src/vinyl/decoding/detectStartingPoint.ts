@@ -10,7 +10,7 @@ export default function detectStartingPoint(vinyl: CanvasImage): Point | null {
       const pos = { x, y };
       const pixel = vinyl.getPixel(pos);
 
-      if (isDataPixel(pixel)) {
+      if (!isDataPixel(pixel)) {
         continue;
       }
 
@@ -39,6 +39,10 @@ export default function detectStartingPoint(vinyl: CanvasImage): Point | null {
         options.push(pos);
       }
     }
+  }
+
+  if (!options.length) {
+    return null;
   }
 
   let closest: Point = options[0];
