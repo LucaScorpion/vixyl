@@ -28,13 +28,14 @@ const CreateVinylPage: React.FC = () => {
   }, [uploadedData, format, fileType]);
 
   useEffect((): void => {
+    setImgDataUrl('');
+
     // Update the canvas.
     const context = canvasRef.current?.getContext('2d');
     if (!encoder || !context || !spiralData) {
       return;
     }
-    encoder.draw(context, spiralData, addQr)
-      .then(() => setImgDataUrl(context.canvas.toDataURL()));
+    setTimeout(() => encoder.draw(context, spiralData, addQr).then(() => setImgDataUrl(context.canvas.toDataURL())), 0);
   }, [spiralData, encoder, addQr]);
 
   return (
@@ -104,6 +105,12 @@ const CreateVinylPage: React.FC = () => {
                 Save <Icon icon='image' />
             </button>
         </a>
+        }
+        {
+          spiralData && !imgDataUrl &&
+          <div className='big'>
+              <Icon icon='spinner' className='fa-pulse' /> Loading...
+          </div>
         }
       </div>
     </main>
