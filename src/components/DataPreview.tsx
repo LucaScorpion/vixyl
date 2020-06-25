@@ -1,5 +1,5 @@
 import React from 'react';
-import { base64ArrayBuffer } from '../util/b64Encode';
+import createDataUrl from '../util/createDataUrl';
 
 export interface Props {
   type: string;
@@ -8,9 +8,14 @@ export interface Props {
 
 const DataPreview: React.FC<Props> = ({ type, data }) => {
   if (type.indexOf('audio/') === 0) {
-    const dataUrl = `data:${type};base64,${base64ArrayBuffer(data)}`;
     return (
-      <audio controls src={dataUrl} style={{ width: '100%' }} />
+      <audio controls src={createDataUrl(type, data)} style={{ width: '100%' }} />
+    );
+  }
+
+  if (type.indexOf('image/') === 0) {
+    return (
+      <img src={createDataUrl(type, data)} />
     );
   }
 
