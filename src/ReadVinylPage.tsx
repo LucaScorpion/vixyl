@@ -1,25 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Vinyl from './vinyl/Vinyl';
-import { VinylMeta } from './vinyl/VinylMeta';
-import VinylParser from './vinyl/VinylParser';
-import parseVinylMeta from './vinyl/parseVinylMeta';
-import ManualControls from './components/ManualControls';
-import createWaves from './wave/createWaves';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import CanvasImage from './vinyl/CanvasImage';
 import Icon from './components/Icon';
+import DataPreview from './components/DataPreview';
+import { FileInfo } from './vinyl/FileInfo';
+import { getDecoder } from './vinyl/encoders/encoders';
 
 const ReadVinylPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [imageData, setImageData] = useState('');
   const [image, setImage] = useState<HTMLImageElement>();
+  const [vinyl, setVinyl] = useState<CanvasImage>();
 
-  const [vinyl, setVinyl] = useState<Vinyl>();
-  const [vinylMeta, setVinylMeta] = useState<VinylMeta>();
-  const [manualControls, setManualControls] = useState(false);
-
-  const [musicData, setMusicData] = useState('');
-  const [loadingState, setLoadingState] = useState('');
-  const [parser, setParser] = useState<VinylParser>();
+  const [fileData, setFileData] = useState<FileInfo>();
+  const [loading, setLoading] = useState(false);
 
   useEffect((): void => {
     // Load the image.
@@ -42,99 +36,80 @@ const ReadVinylPage: React.FC = () => {
     context.drawImage(image, 0, 0);
 
     // Load the vinyl from the context.
-    setVinyl(new Vinyl(context));
+    setVinyl(new CanvasImage(context));
   }, [image]);
 
-  useEffect((): void => {
-    if (!vinyl) {
+  const selectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    // Check if a file is selected.
+    const file = e.currentTarget.files?.item(0);
+    if (!file) {
       return;
     }
 
-    // Parse the vinyl metadata.
-    const meta = parseVinylMeta(vinyl);
-    if (meta) {
-      setVinylMeta(meta);
-      setManualControls(false);
-    } else {
-      setManualControls(true);
+    // Clear the previous decoded data.
+    setFileData(undefined);
+
+    // Read the file into state.
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      if (typeof reader.result === 'string') {
+        setImageData(reader.result);
+      }
+    });
+    reader.readAsDataURL(file);
+  }, []);
+
+  const readVinyl = useCallback(async () => {
+    if (!vinyl) {
+      return;
+    }
+    setFileData(undefined);
+
+    const decoder = getDecoder(vinyl);
+    if (!decoder) {
+      return;
     }
 
-    // Create the vinyl parser.
-    setParser(new VinylParser(vinyl));
+    setLoading(true);
+    setFileData(await decoder.decode(vinyl));
+    setLoading(false);
   }, [vinyl]);
 
   return (
     <main className='flex-center'>
-      <div>
-        <canvas
-          ref={canvasRef}
-          width={image?.width}
-          height={image?.height}
-          style={{
-            marginRight: 48,
-            width: image?.width,
-            height: image?.height,
-          }}
-        />
-      </div>
-      <div className='controls'>
+      <div className='controls wide'>
         <input
           type='file'
-          onChange={(e) => {
-            // Check if a file is selected.
-            const file = e.currentTarget.files?.item(0);
-            if (!file) {
-              return;
-            }
-
-            // Clear the previous sound data.
-            setMusicData('');
-
-            // Read the file into state.
-            const reader = new FileReader();
-            reader.addEventListener('load', () => {
-              if (typeof reader.result === 'string') {
-                setImageData(reader.result);
-              }
-            });
-            reader.readAsDataURL(file);
-          }}
+          accept='image/*'
+          onChange={selectFile}
           className='row'
         />
 
-        {manualControls && parser && <ManualControls parser={parser} setVinylMeta={setVinylMeta} />}
+        <div className='center'>
+          <canvas ref={canvasRef} className='row' width={image?.width} height={image?.height} style={{
+            maxWidth: image?.width,
+            maxHeight: image?.height,
+          }} />
+        </div>
 
         <button
+          className='big'
           style={{
-            width: '100%',
-            fontSize: 24,
-            padding: 12,
             marginBottom: 12,
           }}
-          onClick={(): void => {
-            if (!parser || !vinylMeta) {
-              return;
-            }
-
-            setLoadingState('Decoding vinylized data streams...');
-            setTimeout(() => {
-              const parsedData = parser.parseVinyl(vinylMeta.trackStart);
-              setLoadingState('Reconfiguring data streams to physical wave mechanics...');
-              setTimeout(() => {
-                setMusicData(createWaves({
-                  data: parsedData,
-                  format: vinylMeta.format,
-                }));
-                setLoadingState('');
-              }, 0);
-            });
-          }}
-          disabled={!parser || !vinylMeta}
+          onClick={readVinyl}
+          disabled={!vinyl}
         >
           Read <Icon icon='music' />
         </button>
-        <span>{loadingState}</span>
-        {musicData && <audio controls src={musicData} style={{ width: '100%' }} />}
+        {loading &&
+        <div className='big'>
+            <Icon icon='spinner' className='fa-pulse' /> Loading...
+        </div>
+        }
+        <div className='center'>
+          {fileData && <DataPreview type={fileData.type} data={fileData.data} />}
+        </div>
       </div>
     </main>
   );

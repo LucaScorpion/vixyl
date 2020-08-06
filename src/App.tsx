@@ -15,7 +15,7 @@ const App: React.FC = () => {
         <nav>
           <NavLink exact to='/'>About</NavLink>
           <NavLink exact to='/read'>Read vinyl</NavLink>
-          {/*<NavLink exact to='/create'>Create vinyl</NavLink>*/}
+          <NavLink exact to='/create'>Create vinyl</NavLink>
         </nav>
       </header>
       <GithubCorner />
