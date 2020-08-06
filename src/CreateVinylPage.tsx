@@ -37,6 +37,10 @@ const CreateVinylPage: React.FC = () => {
       }
     });
     setEncoderOptions(opts);
+
+    // We don't want to depend on encoderOptions, because that would turn into an infinite loop since we also update
+    // them here. We only use them to copy over current values when the encoder changes, so no need to depend on them.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [encoding]);
 
   const selectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -114,6 +118,9 @@ const CreateVinylPage: React.FC = () => {
     if (canvasPropsResolve) {
       canvasPropsResolve();
     }
+
+    // We don't want to depend on canvasPropsResolve, because we just want to resolve whenever the props change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canvasProps]);
 
   return (
