@@ -1,0 +1,28 @@
+{
+  "files": {
+    "main.css": "/vixyl/static/css/main.83a7f1f5.chunk.css",
+    "main.js": "/vixyl/static/js/main.47155e22.chunk.js",
+    "main.js.map": "/vixyl/static/js/main.47155e22.chunk.js.map",
+    "runtime-main.js": "/vixyl/static/js/runtime-main.239cd415.js",
+    "runtime-main.js.map": "/vixyl/static/js/runtime-main.239cd415.js.map",
+    "static/css/2.9c5210c4.chunk.css": "/vixyl/static/css/2.9c5210c4.chunk.css",
+    "static/js/2.14af9577.chunk.js": "/vixyl/static/js/2.14af9577.chunk.js",
+    "static/js/2.14af9577.chunk.js.map": "/vixyl/static/js/2.14af9577.chunk.js.map",
+    "index.html": "/vixyl/index.html",
+    "precache-manifest.b7f8f7b003584c4d571bc0e708be3f51.js": "/vixyl/precache-manifest.b7f8f7b003584c4d571bc0e708be3f51.js",
+    "service-worker.js": "/vixyl/service-worker.js",
+    "static/css/2.9c5210c4.chunk.css.map": "/vixyl/static/css/2.9c5210c4.chunk.css.map",
+    "static/css/main.83a7f1f5.chunk.css.map": "/vixyl/static/css/main.83a7f1f5.chunk.css.map",
+    "static/js/2.14af9577.chunk.js.LICENSE.txt": "/vixyl/static/js/2.14af9577.chunk.js.LICENSE.txt",
+    "static/media/index.scss": "/vixyl/static/media/fa-solid-900.8e39d5d5.svg",
+    "static/media/tdfw_new.png": "/vixyl/static/media/tdfw_new.6b381db3.png",
+    "static/media/tweet.png": "/vixyl/static/media/tweet.a7ac1566.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.239cd415.js",
+    "static/css/2.9c5210c4.chunk.css",
+    "static/js/2.14af9577.chunk.js",
+    "static/css/main.83a7f1f5.chunk.css",
+    "static/js/main.47155e22.chunk.js"
+  ]
+}
