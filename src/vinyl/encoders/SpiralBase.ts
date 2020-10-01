@@ -77,7 +77,7 @@ export default abstract class SpiralBase implements EncoderDecoder<Options> {
           context.drawImage(qrImg, Math.round(center.x - qrImg.width / 2), Math.round(center.y - qrImg.height / 2));
           res();
         });
-        qrImg.src = 'vixyl/qr.png';
+        qrImg.src = '/vixyl/qr.png';
       });
     }
 
