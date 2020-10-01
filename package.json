@@ -1,17 +1,18 @@
 {
   "name": "vixyl",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Store binary data in pixel art vinyl form",
   "homepage": "https://lucascorpion.github.io/vixyl",
   "repository": "github:LucaScorpion/vixyl",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.13.0",
+    "@fortawesome/fontawesome-free": "^5.15.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.43",
-    "@types/react": "^16.9.35",
-    "@types/react-color": "^3.0.2",
+    "@types/node": "^12.12.62",
+    "@types/react": "^16.9.49",
+    "@types/react-color": "^3.0.4",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.5",
     "node-sass": "^4.14.1",
@@ -19,8 +20,8 @@
     "react-color": "^2.18.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1",
-    "typescript": "^3.7.5"
+    "react-scripts": "^3.4.3",
+    "typescript": "^3.9.7"
   },
   "scripts": {
     "start": "react-scripts start",
