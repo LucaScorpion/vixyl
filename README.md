@@ -16,13 +16,13 @@ Encoded in the spiral is an 8-bit mono 4kHz audio track, containing 3 seconds of
 
 ### Reading a vinyl
 
-1. Go to https://lucascorpion.github.io/vixyl#/read
+1. Go to https://lucascorpion.github.io/vixyl/#/read
 2. Load the vinyl image you want to read
 3. Click the "Read" button
 
 ### Creating a vinyl
 
-1. Go to https://lucascorpion.github.io/vixyl#/create
+1. Go to https://lucascorpion.github.io/vixyl/#/create
 2. Load the file you want to encode
 3. Select an encoding method (e.g. Rainbow Spiral)
 4. Set the encoder options (e.g. background color)
