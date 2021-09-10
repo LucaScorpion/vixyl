@@ -72,7 +72,7 @@ export default abstract class SpiralBase implements EncoderDecoder<Options> {
     drawCircle(context, center.x, center.y, spiral.points[spiral.points.length - 1].x - 5, 'white');
     if (options.form.addQr) {
       const qrImg = new Image();
-      await new Promise(res => {
+      await new Promise<void>(res => {
         qrImg.addEventListener('load', () => {
           context.drawImage(qrImg, Math.round(center.x - qrImg.width / 2), Math.round(center.y - qrImg.height / 2));
           res();
